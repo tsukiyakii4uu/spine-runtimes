@@ -70,6 +70,7 @@ void SpineBoneNode::_notification(int what) {
 #else
 				sprite->connect(SNAME("world_transforms_changed"), this, SNAME("_on_world_transforms_changed"));
 #endif
+				set_notify_local_transform(bone_mode == SpineConstant::BoneMode_Drive);
 				update_transform(sprite);
 #if VERSION_MAJOR == 3
 				_change_notify("transform/translation");
@@ -94,6 +95,18 @@ void SpineBoneNode::_notification(int what) {
 #else
 				sprite->disconnect(SNAME("world_transforms_changed"), this, SNAME("_on_world_transforms_changed"));
 #endif
+			}
+			break;
+		}
+		case NOTIFICATION_LOCAL_TRANSFORM_CHANGED: {
+			if (bone_mode == SpineConstant::BoneMode_Drive && enabled) {
+				SpineSprite *sprite = find_parent_sprite();
+				if (sprite) {
+					Ref<SpineBone> bone = find_bone();
+					if (bone.is_valid()) {
+						bone->set_global_transform(get_global_transform());
+					}
+				}
 			}
 			break;
 		}
@@ -247,6 +260,7 @@ SpineConstant::BoneMode SpineBoneNode::get_bone_mode() {
 void SpineBoneNode::set_bone_mode(SpineConstant::BoneMode _bone_mode) {
 	if (bone_mode != _bone_mode) {
 		bone_mode = _bone_mode;
+		set_notify_local_transform(bone_mode == SpineConstant::BoneMode_Drive);
 		SpineSprite *sprite = find_parent_sprite();
 		init_transform(sprite);
 	}
