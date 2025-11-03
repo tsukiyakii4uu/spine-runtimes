@@ -61,7 +61,6 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 
 	OnCreate () {
 		this._inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_PROVIDER_MOVE, false);
-		this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_SKELETON) as number;
 	}
 
 	OnPlacedInLayout () {

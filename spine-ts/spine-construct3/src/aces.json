@@ -32,11 +32,6 @@
     ],
     "actions": [
       {
-        "id": "do-alert",
-        "scriptName": "Alert",
-        "highlight": true
-      },
-      {
         "id": "set-skin",
         "scriptName": "SetSkin",
         "highlight": false,
@@ -50,7 +45,7 @@
       {
         "id": "set-animation",
         "scriptName": "SetAnimation",
-        "highlight": false,
+        "highlight": true,
         "params": [
           {
             "id": "track",
@@ -63,6 +58,29 @@
           {
             "id": "loop",
             "type": "boolean"
+          }
+        ]
+      },
+      {
+        "id": "add-animation",
+        "scriptName": "AddAnimation",
+        "highlight": true,
+        "params": [
+          {
+            "id": "track",
+            "type": "number"
+          },
+          {
+            "id": "animation",
+            "type": "string"
+          },
+          {
+            "id": "loop",
+            "type": "boolean"
+          },
+          {
+            "id": "delay",
+            "type": "number"
           }
         ]
       }

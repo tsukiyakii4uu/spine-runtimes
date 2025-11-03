@@ -61,9 +61,11 @@ export class AssetLoader {
 		const blob = projectFile.GetBlob();
 		const content = await blob.text();
 
+		const path = projectFile.GetPath();
+		const basePath = path.substring(0, path.lastIndexOf("/") + 1);
 		const textureAtlas = new TextureAtlas(content);
 		await Promise.all(textureAtlas.pages.map(async page => {
-			const texture = await this.loadSpineTextureEditor(page.name, page.pma, instance);
+			const texture = await this.loadSpineTextureEditor(basePath + page.name, page.pma, instance);
 			if (texture) {
 				const spineTexture = new C3TextureEditor(texture, renderer, page);
 				page.setTexture(spineTexture);
@@ -112,9 +114,10 @@ export class AssetLoader {
 		const content = await instance.assets.fetchText(fullPath);
 		if (!content) return null;
 
+		const basePath = path.substring(0, path.lastIndexOf("/") + 1);
 		const textureAtlas = new TextureAtlas(content);
 		await Promise.all(textureAtlas.pages.map(async page => {
-			const texture = await this.loadSpineTextureRuntime(page.name, page.pma, instance);
+			const texture = await this.loadSpineTextureRuntime(basePath + page.name, page.pma, instance);
 			if (texture) {
 				const spineTexture = new C3Texture(texture, renderer, page);
 				page.setTexture(spineTexture);
