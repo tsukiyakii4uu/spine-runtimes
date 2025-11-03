@@ -107,3 +107,4 @@ const PLUGIN_CLASS = class SpineC3Plugin extends SDK.IPluginBase {
 SDK.Plugins.EsotericSoftware_SpineConstruct3 = PLUGIN_CLASS;
 
 PLUGIN_CLASS.Register(PLUGIN_ID, PLUGIN_CLASS);
+

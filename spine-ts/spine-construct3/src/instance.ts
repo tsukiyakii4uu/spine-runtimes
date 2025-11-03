@@ -1,6 +1,7 @@
 // / <reference types="editor/sdk" />
 
 import type { AnimationState, AssetLoader, Skeleton, SkeletonRendererCore, SpineBoundsProvider, TextureAtlas } from "@esotericsoftware/spine-construct3-lib";
+import type { SpineC3PluginType } from "./type";
 
 const SDK = globalThis.SDK;
 
@@ -21,6 +22,8 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 	state?: AnimationState;
 	skins: string[] = [];
 	animation?: string;
+
+	_inst!: SDK.IWorldInstance & { errors: Record<string, string> };
 
 	private assetLoader: AssetLoader;
 	private skeletonRenderer: SkeletonRendererCore;
@@ -53,7 +56,7 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		this.assetLoader = new spine.AssetLoader();
 		this.skeletonRenderer = new spine.SkeletonRendererCore();
 
-		(this._inst as any).errors = this.errors;
+		this._inst.errors = this.errors;
 	}
 
 	Release () {
@@ -169,8 +172,7 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 			// }
 		} else {
 
-			const sdkType = (this._sdkType as any);
-
+			const sdkType = this._sdkType as SpineC3PluginType;
 
 			const logo = sdkType.getSpineLogo(iRenderer);
 			if (logo) {

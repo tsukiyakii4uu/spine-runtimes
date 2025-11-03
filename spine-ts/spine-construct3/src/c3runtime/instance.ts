@@ -47,7 +47,6 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 			this.propOffsetAngle = properties[9] as number;
 			this.propScaleX = properties[10] as number;
 			this.propScaleY = properties[11] as number;
-
 		}
 
 		this.assetLoader = new spine.AssetLoader();
