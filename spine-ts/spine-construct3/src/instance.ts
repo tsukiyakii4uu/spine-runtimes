@@ -1,6 +1,6 @@
 // / <reference types="editor/sdk" />
 
-import { AnimationState, AssetLoader, Skeleton, SkeletonRendererCore, SpineBoundsProvider, TextureAtlas } from "@esotericsoftware/spine-construct3-lib";
+import type { AnimationState, AssetLoader, Skeleton, SkeletonRendererCore, SpineBoundsProvider, TextureAtlas } from "@esotericsoftware/spine-construct3-lib";
 
 const SDK = globalThis.SDK;
 
@@ -10,7 +10,7 @@ let spine: typeof globalThis.spine;
 
 type SpineBoundsProviderType = "setup" | "animation-skin" | "AABB";
 
-class MyDrawingInstance extends SDK.IWorldInstanceBase {
+class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 	private layoutView?: SDK.UI.ILayoutView;
 	private renderer?: SDK.Gfx.IWebGLRenderer;
 
@@ -467,6 +467,6 @@ class MyDrawingInstance extends SDK.IWorldInstanceBase {
 	}
 };
 
-PLUGIN_CLASS.Instance = MyDrawingInstance;
+PLUGIN_CLASS.Instance = SpineC3PluginInstance;
 
-export type { MyDrawingInstance as SDKEditorInstanceClass };
+export type { SpineC3PluginInstance as SDKEditorInstanceClass };

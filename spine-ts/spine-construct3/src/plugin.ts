@@ -1,3 +1,4 @@
+// biome-ignore lint/correctness/noUnusedImports: necessary to make C3 recognize the plugin
 import type { SDKEditorInstanceClass } from "./instance.ts";
 
 const SDK = globalThis.SDK;
@@ -15,7 +16,7 @@ const PLUGIN_ID = "EsotericSoftware_SpineConstruct3";
 
 const PLUGIN_CATEGORY = "general";
 
-const PLUGIN_CLASS = class MyDrawingPlugin extends SDK.IPluginBase {
+const PLUGIN_CLASS = class SpineC3Plugin extends SDK.IPluginBase {
 	static PROP_ATLAS = "spine-atlas-file";
 	static PROP_SKELETON = "spine-skeleton-file";
 	static PROP_LOADER_SCALE = "spine-loader-scale";
@@ -39,7 +40,7 @@ const PLUGIN_CLASS = class MyDrawingPlugin extends SDK.IPluginBase {
 	constructor () {
 		super(PLUGIN_ID);
 
-		SDK.Lang.PushContext("plugins." + PLUGIN_ID.toLowerCase());
+		SDK.Lang.PushContext(`plugins.${PLUGIN_ID.toLowerCase()}`);
 
 		// @ts-ignore
 		this._info.SetName(globalThis.lang(".name"));
@@ -65,12 +66,12 @@ const PLUGIN_CLASS = class MyDrawingPlugin extends SDK.IPluginBase {
 		SDK.Lang.PushContext(".properties");
 
 		this._info.SetProperties([
-			new SDK.PluginProperty("projectfile", MyDrawingPlugin.PROP_ATLAS, ""),
-			new SDK.PluginProperty("projectfile", MyDrawingPlugin.PROP_SKELETON, ""),
-			new SDK.PluginProperty("float", MyDrawingPlugin.PROP_LOADER_SCALE, 1),
-			new SDK.PluginProperty("text", MyDrawingPlugin.PROP_SKIN, ""),
-			new SDK.PluginProperty("text", MyDrawingPlugin.PROP_ANIMATION, ""),
-			new SDK.PluginProperty("info", MyDrawingPlugin.PROP_ERRORS, {
+			new SDK.PluginProperty("projectfile", SpineC3Plugin.PROP_ATLAS, { initialValue: "", filter: ".atlas" }),
+			new SDK.PluginProperty("projectfile", SpineC3Plugin.PROP_SKELETON, { initialValue: "", filter: ".json,.skel" }),
+			new SDK.PluginProperty("float", SpineC3Plugin.PROP_LOADER_SCALE, 1),
+			new SDK.PluginProperty("text", SpineC3Plugin.PROP_SKIN, ""),
+			new SDK.PluginProperty("text", SpineC3Plugin.PROP_ANIMATION, ""),
+			new SDK.PluginProperty("info", SpineC3Plugin.PROP_ERRORS, {
 				infoCallback (inst) {
 					const errors = (inst.GetInstance() as unknown as { errors: Record<string, string> }).errors;
 					return Object.values(errors).reduce((acc, next) => {
@@ -79,20 +80,20 @@ const PLUGIN_CLASS = class MyDrawingPlugin extends SDK.IPluginBase {
 				},
 			}),
 
-			new SDK.PluginProperty("group", MyDrawingPlugin.PROP_BOUNDS_PROVIDER_GROUP),
-			new SDK.PluginProperty("combo", MyDrawingPlugin.PROP_BOUNDS_PROVIDER, {
+			new SDK.PluginProperty("group", SpineC3Plugin.PROP_BOUNDS_PROVIDER_GROUP),
+			new SDK.PluginProperty("combo", SpineC3Plugin.PROP_BOUNDS_PROVIDER, {
 				initialValue: "setup",
 				items: [
-					MyDrawingPlugin.TYPE_BOUNDS_SETUP,
-					MyDrawingPlugin.TYPE_BOUNDS_ANIMATION_SKIN,
+					SpineC3Plugin.TYPE_BOUNDS_SETUP,
+					SpineC3Plugin.TYPE_BOUNDS_ANIMATION_SKIN,
 				],
 			}),
-			new SDK.PluginProperty("check", MyDrawingPlugin.PROP_BOUNDS_PROVIDER_MOVE, false),
-			new SDK.PluginProperty("float", MyDrawingPlugin.PROP_BOUNDS_OFFSET_X, 0),
-			new SDK.PluginProperty("float", MyDrawingPlugin.PROP_BOUNDS_OFFSET_Y, 0),
-			new SDK.PluginProperty("float", MyDrawingPlugin.PROP_BOUNDS_OFFSET_ANGLE, 0),
-			new SDK.PluginProperty("float", MyDrawingPlugin.PROP_SKELETON_SCALE_X, 1),
-			new SDK.PluginProperty("float", MyDrawingPlugin.PROP_SKELETON_SCALE_Y, 1),
+			new SDK.PluginProperty("check", SpineC3Plugin.PROP_BOUNDS_PROVIDER_MOVE, false),
+			new SDK.PluginProperty("float", SpineC3Plugin.PROP_BOUNDS_OFFSET_X, 0),
+			new SDK.PluginProperty("float", SpineC3Plugin.PROP_BOUNDS_OFFSET_Y, 0),
+			new SDK.PluginProperty("float", SpineC3Plugin.PROP_BOUNDS_OFFSET_ANGLE, 0),
+			new SDK.PluginProperty("float", SpineC3Plugin.PROP_SKELETON_SCALE_X, 1),
+			new SDK.PluginProperty("float", SpineC3Plugin.PROP_SKELETON_SCALE_Y, 1),
 
 
 		]);

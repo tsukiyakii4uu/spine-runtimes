@@ -3,20 +3,14 @@ const SDK = globalThis.SDK;
 
 const PLUGIN_CLASS = SDK.Plugins.EsotericSoftware_SpineConstruct3;
 
-PLUGIN_CLASS.Type = class MyDrawingPluginType extends SDK.ITypeBase {
+PLUGIN_CLASS.Type = class SpineC3PluginType extends SDK.ITypeBase {
 
 	spineLogo?: SDK.Gfx.IWebGLTexture;
 	private spineLogoRequested = false;
 
-	constructor (sdkPlugin: SDK.IPluginBase, iObjectType: SDK.IObjectType) {
-		super(sdkPlugin, iObjectType);
-	}
-
 	getSpineLogo (iRenderer: SDK.Gfx.IWebGLRenderer) {
 		if (this.spineLogo) return this.spineLogo;
 		if (this.spineLogoRequested) return undefined;
-
-		console.log("UNA VOLTA");
 
 		this.spineLogoRequested = true;
 

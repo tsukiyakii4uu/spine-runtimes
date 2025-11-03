@@ -2,7 +2,7 @@
   "$schema": "../../plugin.lang.schema.json",
 
   "languageTag": "en-US",
-  "fileDescription": "Strings for MyDrawingPlugin.",
+  "fileDescription": "Strings for SpineC3Plugin.",
   "text": {
     "plugins": {
       "esotericsoftware_spineconstruct3": {

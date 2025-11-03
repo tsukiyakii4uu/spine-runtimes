@@ -6,7 +6,7 @@ const C3 = globalThis.C3;
 C3.Plugins.EsotericSoftware_SpineConstruct3.Acts =
 {
 	Alert (this: SDKInstanceClass) {
-		alert("Test property = " + this._getTestProperty());
+		alert(`Test property = ${this._getTestProperty()}`);
 	},
 
 	SetSkin (this: SDKInstanceClass, skinList: string) {

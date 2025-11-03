@@ -1,11 +1,11 @@
-import { AnimationEventType, type AnimationState, AnimationStateListener, type AssetLoader, BlendingModeSpineToC3, type Event, EventType, type Skeleton, type SkeletonRendererCore, type SpineBoundsProvider, type TextureAtlas, TrackEntry } from "@esotericsoftware/spine-construct3-lib";
+import type { AnimationState, AssetLoader, Event, Skeleton, SkeletonRendererCore, TextureAtlas, } from "@esotericsoftware/spine-construct3-lib";
 
 const C3 = globalThis.C3;
 const spine = globalThis.spine;
 
 spine.Skeleton.yDown = true;
 
-class DrawingInstance extends globalThis.ISDKWorldInstanceBase {
+class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 	propAtlas = "";
 	propSkel = "";
 	propLoaderScale = 1;
@@ -292,6 +292,6 @@ class DrawingInstance extends globalThis.ISDKWorldInstanceBase {
 	}
 };
 
-C3.Plugins.EsotericSoftware_SpineConstruct3.Instance = DrawingInstance;
+C3.Plugins.EsotericSoftware_SpineConstruct3.Instance = SpineC3Instance;
 
-export type { DrawingInstance as SDKInstanceClass };
+export type { SpineC3Instance as SDKInstanceClass };
