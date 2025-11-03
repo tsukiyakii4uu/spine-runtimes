@@ -147,7 +147,7 @@ export class SkeletonClipping {
 					s = clippedTriangles.length;
 					const clippedTrianglesItems = Utils.setArraySize(clippedTriangles, s + 3 * (clipOutputCount - 2));
 					clipOutputCount--;
-					for (let ii = 1; ii < clipOutputCount; ii++ , s += 3) {
+					for (let ii = 1; ii < clipOutputCount; ii++, s += 3) {
 						clippedTrianglesItems[s] = index;
 						clippedTrianglesItems[s + 1] = (index + ii);
 						clippedTrianglesItems[s + 2] = (index + ii + 1);
@@ -240,7 +240,7 @@ export class SkeletonClipping {
 					s = clippedTriangles.length;
 					const clippedTrianglesItems = Utils.setArraySize(clippedTriangles, s + 3 * (clipOutputCount - 2));
 					clipOutputCount--;
-					for (let ii = 1; ii < clipOutputCount; ii++ , s += 3) {
+					for (let ii = 1; ii < clipOutputCount; ii++, s += 3) {
 						clippedTrianglesItems[s] = index;
 						clippedTrianglesItems[s + 1] = (index + ii);
 						clippedTrianglesItems[s + 2] = (index + ii + 1);
@@ -402,7 +402,7 @@ export class SkeletonClipping {
 					this.clippedTrianglesLength = newLengthTriangles;
 					const clippedTrianglesItems = clippedTriangles;
 					clipOutputCount--;
-					for (let ii = 1; ii < clipOutputCount; ii++ , s += 3) {
+					for (let ii = 1; ii < clipOutputCount; ii++, s += 3) {
 						clippedTrianglesItems[s] = index;
 						clippedTrianglesItems[s + 1] = (index + ii);
 						clippedTrianglesItems[s + 2] = (index + ii + 1);
