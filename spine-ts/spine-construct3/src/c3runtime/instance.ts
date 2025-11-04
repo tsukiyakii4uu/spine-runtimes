@@ -16,6 +16,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 	propOffsetAngle = 0;
 	propScaleX = 1;
 	propScaleY = 1;
+	propFlipX = false;
 
 	textureAtlas?: TextureAtlas;
 	renderer?: IRenderer;
@@ -97,7 +98,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 
 			this.update(0);
 
-			this.skeleton.scaleX = this.propScaleX;
+			this.skeleton.scaleX = this.propFlipX ? -this.propScaleX : this.propScaleX;
 			this.skeleton.scaleY = this.propScaleY;
 
 			this.skeletonLoaded = true;
@@ -117,6 +118,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		this.triggeredEventData = event;
 		this._trigger(C3.Plugins.EsotericSoftware_SpineConstruct3.Cnds.OnAnimationEvent);
 	}
+
 	public setAnimation (track: number, animation: string, loop = false) {
 		const trackEntry = this.state?.setAnimation(track, animation, loop);
 		if (!trackEntry) return;
@@ -172,6 +174,13 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 	public setSkin (skins: string[]) {
 		this.propSkin = skins;
 		this._setSkin();
+	}
+
+	public flipX (isFlippedX: boolean) {
+		this.propFlipX = isFlippedX;
+		if (this.skeleton) {
+			this.skeleton.scaleX = isFlippedX ? -this.propScaleX : this.propScaleX;
+		}
 	}
 
 	private _setSkin () {

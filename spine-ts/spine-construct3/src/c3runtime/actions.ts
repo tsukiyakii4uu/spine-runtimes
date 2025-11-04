@@ -13,6 +13,10 @@ C3.Plugins.EsotericSoftware_SpineConstruct3.Acts =
 		this.setSkin(skinList.split(","));
 	},
 
+	FlipX (this: SDKInstanceClass, isFlippedX: boolean) {
+		this.flipX(isFlippedX);
+	},
+
 	SetAnimation (this: SDKInstanceClass, track: number, animation: string, loop = false) {
 		this.setAnimation(track, animation, loop);
 	},

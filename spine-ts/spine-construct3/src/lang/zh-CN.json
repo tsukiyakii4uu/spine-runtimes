@@ -98,6 +98,11 @@
                 "desc": "轨道编号"
               }
             }
+          },
+          "is-flipped-x": {
+            "list-name": "是否水平翻转",
+            "display-text": "是否水平翻转",
+            "description": "检查骨架是否水平翻转"
           }
         },
         "actions": {
@@ -114,6 +119,17 @@
               "skin-name": {
                 "name": "皮肤列表",
                 "desc": "用逗号分隔的要设置的皮肤列表。空字符串表示取消设置所有皮肤。"
+              }
+            }
+          },
+          "flip-x": {
+            "list-name": "水平翻转",
+            "display-text": "设置水平翻转为 {0}",
+            "description": "水平翻转骨架",
+            "params": {
+              "is-flipped-x": {
+                "name": "是否水平翻转",
+                "desc": "设为true时水平翻转骨架，设为false时正常显示。"
               }
             }
           },

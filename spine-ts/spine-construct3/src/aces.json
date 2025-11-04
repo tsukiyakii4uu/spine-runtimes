@@ -28,6 +28,11 @@
             "type": "string"
           }
         ]
+      },
+      {
+        "id": "is-flipped-x",
+        "scriptName": "IsFlippedX",
+        "isTrigger": false
       }
     ],
     "actions": [
@@ -39,6 +44,17 @@
           {
             "id": "skin-name",
             "type": "string"
+          }
+        ]
+      },
+      {
+        "id": "flip-x",
+        "scriptName": "FlipX",
+        "highlight": false,
+        "params": [
+          {
+            "id": "is-flipped-x",
+            "type": "boolean"
           }
         ]
       },

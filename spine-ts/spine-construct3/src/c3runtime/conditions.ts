@@ -16,4 +16,7 @@ C3.Plugins.EsotericSoftware_SpineConstruct3.Cnds =
 			&& this.triggeredEventTrack === track
 			&& this.triggeredEventAnimation === animation;
 	},
+	IsFlippedX (this: SDKInstanceClass) {
+		return this.propFlipX;
+	},
 };
