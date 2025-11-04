@@ -22,13 +22,13 @@
     "strict": true
   },
   "include": ["src/**/*.ts", "ts-defs/**/*.d.ts", "spine.d.ts"],
-  "exclude": ["dist/**/*.d.ts"],
+  "exclude": ["dist/**/*.d.ts", "spine-construct3-lib/**/*"],
   "references": [
     {
       "path": "../spine-core"
     },
     {
-      "path": "../spine-construct3-lib"
+      "path": "./spine-construct3-lib"
     }
   ]
 }
