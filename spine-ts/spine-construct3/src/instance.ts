@@ -79,6 +79,7 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 
 		const hasErrors = this.hasErrors();
 		if (this.skeleton && !hasErrors) {
+			this.setAnimation();
 			this.setSkin();
 
 			const rectX = this._inst.GetX();
@@ -233,6 +234,7 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		}
 
 		if (id === PLUGIN_CLASS.PROP_ANIMATION) {
+			this.setAnimation();
 			this.layoutView?.Refresh();
 			return;
 		}
@@ -260,6 +262,10 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		}
 
 		console.log("Prop change end");
+	}
+
+	private setAnimation () {
+		this.animation = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_ANIMATION) as string;
 	}
 
 	private setSkin () {
@@ -424,6 +430,12 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 			"boundsAnimationSkinType",
 			boundsType === "animation-skin" && ((!skins || skins.length === 0) && !animation),
 			"Animation/Skin bounds provider requires one between skin and animation to be set."
+		);
+
+		this.setError(
+			"nonExistingAnimation",
+			Boolean(!animation || this.skeleton?.data.findAnimation(animation)) === false,
+			"Not existing animation"
 		);
 
 		const { width, height } = spineBounds;
