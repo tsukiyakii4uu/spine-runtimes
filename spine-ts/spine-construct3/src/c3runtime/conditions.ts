@@ -1,14 +1,14 @@
 
-import type { SDKInstanceClass } from "./instance.ts";
+import type { SDKInstanceClass as SpineC3Instance } from "./instance.ts";
 
 const C3 = globalThis.C3;
 
 C3.Plugins.EsotericSoftware_SpineConstruct3.Cnds =
 {
-	OnSkeletonLoaded (this: SDKInstanceClass) {
+	OnSkeletonLoaded (this: SpineC3Instance) {
 		return true;
 	},
-	OnAnimationEvent (this: SDKInstanceClass, event: string, track: number, animation: string) {
+	OnAnimationEvent (this: SpineC3Instance, event: string, track: number, animation: string) {
 		console.log(this.triggeredEventName === event
 			&& this.triggeredEventTrack === track
 			&& this.triggeredEventAnimation === animation);
@@ -16,7 +16,10 @@ C3.Plugins.EsotericSoftware_SpineConstruct3.Cnds =
 			&& this.triggeredEventTrack === track
 			&& this.triggeredEventAnimation === animation;
 	},
-	IsFlippedX (this: SDKInstanceClass) {
+	IsFlippedX (this: SpineC3Instance) {
 		return this.propFlipX;
+	},
+	IsSkeletonLoaded (this: SpineC3Instance) {
+		return this.skeletonLoaded;
 	},
 };

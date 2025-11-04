@@ -103,6 +103,11 @@
             "list-name": "Is flipped X",
             "display-text": "Is flipped X",
             "description": "Check if the skeleton is flipped horizontally"
+          },
+          "is-skeleton-loaded": {
+            "list-name": "Is skeleton loaded",
+            "display-text": "Is skeleton loaded",
+            "description": "Check if the skeleton has finished loading"
           }
         },
         "actions": {

@@ -103,6 +103,11 @@
             "list-name": "是否水平翻转",
             "display-text": "是否水平翻转",
             "description": "检查骨架是否水平翻转"
+          },
+          "is-skeleton-loaded": {
+            "list-name": "骨架是否已加载",
+            "display-text": "骨架是否已加载",
+            "description": "检查骨架是否已完成加载"
           }
         },
         "actions": {

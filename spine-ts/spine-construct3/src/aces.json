@@ -33,6 +33,11 @@
         "id": "is-flipped-x",
         "scriptName": "IsFlippedX",
         "isTrigger": false
+      },
+      {
+        "id": "is-skeleton-loaded",
+        "scriptName": "IsSkeletonLoaded",
+        "isTrigger": false
       }
     ],
     "actions": [
