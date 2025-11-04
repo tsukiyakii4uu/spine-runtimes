@@ -1,4 +1,4 @@
-import type { AnimationState, AssetLoader, Event, Skeleton, SkeletonRendererCore, TextureAtlas, } from "@esotericsoftware/spine-construct3-lib";
+import type { AnimationState, AnimationStateListener, AssetLoader, Event, Skeleton, SkeletonRendererCore, TextureAtlas, } from "@esotericsoftware/spine-construct3-lib";
 
 const C3 = globalThis.C3;
 const spine = globalThis.spine;
@@ -119,56 +119,37 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		this._trigger(C3.Plugins.EsotericSoftware_SpineConstruct3.Cnds.OnAnimationEvent);
 	}
 
+	private makeTrackListener = (track: number, animation: string): AnimationStateListener => ({
+		start: () => {
+			this.triggetAnimationEvent("start", track, animation);
+		},
+		dispose: () => {
+			this.triggetAnimationEvent("dispose", track, animation);
+		},
+		event: (_, event) => {
+			this.triggetAnimationEvent("event", track, animation, event);
+		},
+		interrupt: () => {
+			this.triggetAnimationEvent("interrupt", track, animation);
+		},
+		end: () => {
+			this.triggetAnimationEvent("end", track, animation);
+		},
+		complete: () => {
+			this.triggetAnimationEvent("complete", track, animation);
+		},
+	})
+
 	public setAnimation (track: number, animation: string, loop = false) {
 		const trackEntry = this.state?.setAnimation(track, animation, loop);
 		if (!trackEntry) return;
-
-		trackEntry.listener = {
-			start: () => {
-				this.triggetAnimationEvent("start", track, animation);
-			},
-			dispose: () => {
-				this.triggetAnimationEvent("dispose", track, animation);
-			},
-			event: (_, event) => {
-				this.triggetAnimationEvent("event", track, animation, event);
-			},
-			interrupt: () => {
-				this.triggetAnimationEvent("interrupt", track, animation);
-			},
-			end: () => {
-				this.triggetAnimationEvent("end", track, animation);
-			},
-			complete: () => {
-				this.triggetAnimationEvent("complete", track, animation);
-			},
-		}
+		trackEntry.listener = this.makeTrackListener(track, animation);
 	}
 
 	public addAnimation (track: number, animation: string, loop = false, delay = 0) {
 		const trackEntry = this.state?.addAnimation(track, animation, loop, delay);
 		if (!trackEntry) return;
-
-		trackEntry.listener = {
-			start: () => {
-				this.triggetAnimationEvent("start", track, animation);
-			},
-			dispose: () => {
-				this.triggetAnimationEvent("dispose", track, animation);
-			},
-			event: (_, event) => {
-				this.triggetAnimationEvent("event", track, animation, event);
-			},
-			interrupt: () => {
-				this.triggetAnimationEvent("interrupt", track, animation);
-			},
-			end: () => {
-				this.triggetAnimationEvent("end", track, animation);
-			},
-			complete: () => {
-				this.triggetAnimationEvent("complete", track, animation);
-			},
-		}
+		trackEntry.listener = this.makeTrackListener(track, animation);
 	}
 
 	public setSkin (skins: string[]) {
