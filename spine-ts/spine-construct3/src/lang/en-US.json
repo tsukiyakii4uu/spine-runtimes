@@ -209,6 +209,21 @@
                 "desc": "Duration in seconds to mix from the current animation to empty"
               }
             }
+          },
+          "set-attachment": {
+            "list-name": "Set attachment",
+            "display-text": "Set slot {0} attachment to {1}",
+            "description": "Change the attachment on a specific slot",
+            "params": {
+              "slot-name": {
+                "name": "Slot name",
+                "desc": "Name of the slot"
+              },
+              "attachment-name": {
+                "name": "Attachment name",
+                "desc": "Name of the attachment to set"
+              }
+            }
           }
         },
         "expressions": {
@@ -219,6 +234,16 @@
               "number": {
                 "name": "Number",
                 "desc": "The number to double."
+              }
+            }
+          },
+          "slot-attachment": {
+            "description": "Get the name of the attachment on a slot. Returns empty string if no attachment.",
+            "translated-name": "SlotAttachment",
+            "params": {
+              "slot-name": {
+                "name": "Slot name",
+                "desc": "Name of the slot"
               }
             }
           }

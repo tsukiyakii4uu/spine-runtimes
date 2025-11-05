@@ -135,6 +135,21 @@
             "type": "number"
           }
         ]
+      },
+      {
+        "id": "set-attachment",
+        "scriptName": "SetAttachment",
+        "highlight": false,
+        "params": [
+          {
+            "id": "slot-name",
+            "type": "string"
+          },
+          {
+            "id": "attachment-name",
+            "type": "string"
+          }
+        ]
       }
     ],
     "expressions": [
@@ -147,6 +162,18 @@
           {
             "id": "number",
             "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "slot-attachment",
+        "expressionName": "SlotAttachment",
+        "highlight": false,
+        "returnType": "string",
+        "params": [
+          {
+            "id": "slot-name",
+            "type": "string"
           }
         ]
       }

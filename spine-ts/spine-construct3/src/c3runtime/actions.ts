@@ -35,6 +35,10 @@ C3.Plugins.EsotericSoftware_SpineConstruct3.Acts =
 
 	SetEmptyAnimation (this: SDKInstanceClass, track: number, mixDuration: number) {
 		this.setEmptyAnimation(track, mixDuration);
+	},
+
+	SetAttachment (this: SDKInstanceClass, slotName: string, attachmentName: string) {
+		this.setAttachment(slotName, attachmentName === "" ? null : attachmentName);
 	}
 
 };

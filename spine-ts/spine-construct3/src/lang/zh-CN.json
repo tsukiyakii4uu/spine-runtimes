@@ -211,6 +211,21 @@
             }
           }
         },
+        "set-attachment": {
+          "list-name": "设置附件",
+          "display-text": "将插槽{0}的附件设置为{1}",
+          "description": "更改特定插槽上的附件",
+          "params": {
+            "slot-name": {
+              "name": "插槽名称",
+              "desc": "插槽的名称"
+            },
+            "attachment-name": {
+              "name": "附件名称",
+              "desc": "要设置的附件名称"
+            }
+          }
+        },
         "expressions": {
           "double": {
             "description": "将数字翻倍。",
@@ -219,6 +234,16 @@
               "number": {
                 "name": "数字",
                 "desc": "要翻倍的数字。"
+              }
+            }
+          },
+          "slot-attachment": {
+            "description": "获取插槽上的附件名称。如果没有附件则返回空字符串。",
+            "translated-name": "SlotAttachment",
+            "params": {
+              "slot-name": {
+                "name": "插槽名称",
+                "desc": "插槽的名称"
               }
             }
           }

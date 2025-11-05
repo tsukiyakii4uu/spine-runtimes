@@ -7,6 +7,13 @@ C3.Plugins.EsotericSoftware_SpineConstruct3.Exps =
 {
 	Double (this: SDKInstanceClass, num: number) {
 		return num * 2;
+	},
+	SlotAttachment (this: SDKInstanceClass, slotName: string) {
+		if (!this.skeleton) return "";
+		const slot = this.skeleton.findSlot(slotName);
+		if (!slot) return "";
+		const attachment = slot.pose.getAttachment();
+		return attachment ? attachment.name : "";
 	}
 };
 
