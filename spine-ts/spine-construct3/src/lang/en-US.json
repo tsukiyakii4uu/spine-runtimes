@@ -82,20 +82,20 @@
           },
           "on-animation-event": {
             "list-name": "On animation event",
-            "display-text": "On {0} event triggered by animation {2} on track {1} trigger",
-            "description": "Do something when animation event is triggered",
+            "display-text": "On {0} event triggered by animation {2} on track {1}",
+            "description": "Triggered when animation event occurs. Use empty string for event/animation or -1 for track to match any value.",
             "params": {
               "event": {
                 "name": "Event name",
-                "desc": "Event name"
+                "desc": "Event name (start, dispose, event, interrupt, end, complete). Empty string matches any event."
               },
               "animation": {
                 "name": "Animation",
-                "desc": "Animation"
+                "desc": "Animation name. Empty string matches any animation."
               },
               "track": {
                 "name": "Track number",
-                "desc": "Track number"
+                "desc": "Track index. Use -1 to match any track."
               }
             }
           },

@@ -16,16 +16,17 @@
           {
             "id": "event",
             "type": "string",
-            "initial-value": "complete"
+            "initial-value": ""
           },
           {
             "id": "track",
             "type": "number",
-            "initial-value": 0
+            "initial-value": -1
           },
           {
             "id": "animation",
-            "type": "string"
+            "type": "string",
+            "initial-value": ""
           }
         ]
       },

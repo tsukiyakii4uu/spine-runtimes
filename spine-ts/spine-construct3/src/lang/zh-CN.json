@@ -83,19 +83,19 @@
           "on-animation-event": {
             "list-name": "动画事件触发时",
             "display-text": "当轨道{1}上的动画{2}触发{0}事件时",
-            "description": "当动画事件触发时执行操作",
+            "description": "当动画事件发生时触发。使用空字符串匹配任意事件/动画，或使用-1匹配任意轨道。",
             "params": {
               "event": {
                 "name": "事件名称",
-                "desc": "事件名称"
+                "desc": "事件名称（start、dispose、event、interrupt、end、complete）。空字符串匹配任意事件。"
               },
               "animation": {
                 "name": "动画",
-                "desc": "动画"
+                "desc": "动画名称。空字符串匹配任意动画。"
               },
               "track": {
                 "name": "轨道编号",
-                "desc": "轨道编号"
+                "desc": "轨道索引。使用-1匹配任意轨道。"
               }
             }
           },
