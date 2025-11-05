@@ -120,6 +120,21 @@
         "id": "stop",
         "scriptName": "Stop",
         "highlight": false
+      },
+      {
+        "id": "set-empty-animation",
+        "scriptName": "SetEmptyAnimation",
+        "highlight": false,
+        "params": [
+          {
+            "id": "track",
+            "type": "number"
+          },
+          {
+            "id": "mix-duration",
+            "type": "number"
+          }
+        ]
       }
     ],
     "expressions": [

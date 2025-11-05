@@ -194,6 +194,21 @@
             "list-name": "Stop",
             "display-text": "Stop animation",
             "description": "Pause or stop the animation"
+          },
+          "set-empty-animation": {
+            "list-name": "Set empty animation",
+            "display-text": "Set empty animation on track {0} with mix duration {1}",
+            "description": "Set an empty animation on a specific track",
+            "params": {
+              "track": {
+                "name": "Track",
+                "desc": "Track index"
+              },
+              "mix-duration": {
+                "name": "Mix duration",
+                "desc": "Duration in seconds to mix from the current animation to empty"
+              }
+            }
           }
         },
         "expressions": {

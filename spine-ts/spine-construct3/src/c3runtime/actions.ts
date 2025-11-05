@@ -31,6 +31,10 @@ C3.Plugins.EsotericSoftware_SpineConstruct3.Acts =
 
 	Stop (this: SDKInstanceClass) {
 		this.stop();
+	},
+
+	SetEmptyAnimation (this: SDKInstanceClass, track: number, mixDuration: number) {
+		this.setEmptyAnimation(track, mixDuration);
 	}
 
 };

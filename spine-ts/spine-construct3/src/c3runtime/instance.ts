@@ -175,6 +175,10 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		this.isPlaying = false;
 	}
 
+	public setEmptyAnimation (track: number, mixDuration = 0) {
+		this.state?.setEmptyAnimation(track, mixDuration);
+	}
+
 	private _setSkin () {
 		const { skeleton } = this;
 		if (!skeleton) return;

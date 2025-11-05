@@ -196,6 +196,21 @@
           "display-text": "停止动画",
           "description": "暂停或停止动画"
         },
+        "set-empty-animation": {
+          "list-name": "设置空动画",
+          "display-text": "在轨道{0}上设置空动画，混合时长{1}",
+          "description": "在特定轨道上设置空动画",
+          "params": {
+            "track": {
+              "name": "轨道",
+              "desc": "轨道索引"
+            },
+            "mix-duration": {
+              "name": "混合时长",
+              "desc": "从当前动画混合到空动画的持续时间（秒）"
+            }
+          }
+        },
         "expressions": {
           "double": {
             "description": "将数字翻倍。",
