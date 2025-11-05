@@ -39,6 +39,11 @@
         "id": "is-skeleton-loaded",
         "scriptName": "IsSkeletonLoaded",
         "isTrigger": false
+      },
+      {
+        "id": "is-playing",
+        "scriptName": "IsPlaying",
+        "isTrigger": false
       }
     ],
     "actions": [
@@ -105,6 +110,16 @@
             "type": "number"
           }
         ]
+      },
+      {
+        "id": "play",
+        "scriptName": "Play",
+        "highlight": false
+      },
+      {
+        "id": "stop",
+        "scriptName": "Stop",
+        "highlight": false
       }
     ],
     "expressions": [

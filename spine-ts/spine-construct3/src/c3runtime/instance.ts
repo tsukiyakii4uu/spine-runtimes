@@ -17,6 +17,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 	propScaleX = 1;
 	propScaleY = 1;
 	propFlipX = false;
+	isPlaying = true;
 
 	textureAtlas?: TextureAtlas;
 	renderer?: IRenderer;
@@ -70,6 +71,8 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 			this.loadSkeleton();
 			return;
 		}
+
+		if (!this.isPlaying) return;
 
 		this.update(this.dt);
 		this.runtime.sdk.updateRender();
@@ -162,6 +165,14 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		if (this.skeleton) {
 			this.skeleton.scaleX = isFlippedX ? -this.propScaleX : this.propScaleX;
 		}
+	}
+
+	public play () {
+		this.isPlaying = true;
+	}
+
+	public stop () {
+		this.isPlaying = false;
 	}
 
 	private _setSkin () {

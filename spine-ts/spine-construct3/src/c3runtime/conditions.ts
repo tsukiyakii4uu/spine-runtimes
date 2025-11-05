@@ -20,4 +20,7 @@ C3.Plugins.EsotericSoftware_SpineConstruct3.Cnds =
 	IsSkeletonLoaded (this: SpineC3Instance) {
 		return this.skeletonLoaded;
 	},
+	IsPlaying (this: SpineC3Instance) {
+		return this.isPlaying;
+	},
 };

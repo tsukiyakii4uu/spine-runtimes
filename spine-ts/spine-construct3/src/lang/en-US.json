@@ -108,6 +108,11 @@
             "list-name": "Is skeleton loaded",
             "display-text": "Is skeleton loaded",
             "description": "Check if the skeleton has finished loading"
+          },
+          "is-playing": {
+            "list-name": "Is playing",
+            "display-text": "Is playing",
+            "description": "Check if the animation is currently playing"
           }
         },
         "actions": {
@@ -179,6 +184,16 @@
                 "desc": "delay"
               }
             }
+          },
+          "play": {
+            "list-name": "Play",
+            "display-text": "Play animation",
+            "description": "Resume or play the animation"
+          },
+          "stop": {
+            "list-name": "Stop",
+            "display-text": "Stop animation",
+            "description": "Pause or stop the animation"
           }
         },
         "expressions": {

@@ -108,6 +108,11 @@
             "list-name": "骨架是否已加载",
             "display-text": "骨架是否已加载",
             "description": "检查骨架是否已完成加载"
+          },
+          "is-playing": {
+            "list-name": "是否正在播放",
+            "display-text": "是否正在播放",
+            "description": "检查动画是否正在播放"
           }
         },
         "actions": {
@@ -180,6 +185,16 @@
               "desc": "延迟"
             }
           }
+        },
+        "play": {
+          "list-name": "播放",
+          "display-text": "播放动画",
+          "description": "恢复或播放动画"
+        },
+        "stop": {
+          "list-name": "停止",
+          "display-text": "停止动画",
+          "description": "暂停或停止动画"
         },
         "expressions": {
           "double": {
