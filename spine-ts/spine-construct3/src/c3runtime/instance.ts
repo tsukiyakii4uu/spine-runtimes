@@ -18,6 +18,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 	propScaleY = 1;
 	propFlipX = false;
 	isPlaying = true;
+	animationSpeed = 1.0;
 	customSkins: Record<string, Skin> = {};
 
 	textureAtlas?: TextureAtlas;
@@ -223,6 +224,10 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		this.skeleton.setupPose();
 	}
 
+	public setAnimationSpeed (speed: number) {
+		this.animationSpeed = speed;
+	}
+
 	private _setSkin () {
 		const { skeleton } = this;
 		if (!skeleton) return;
@@ -261,8 +266,9 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 
 		if (!skeleton || !state) return;
 
-		state.update(delta);
-		skeleton.update(delta);
+		const adjustedDelta = delta * this.animationSpeed;
+		state.update(adjustedDelta);
+		skeleton.update(adjustedDelta);
 		state.apply(skeleton);
 		skeleton.updateWorldTransform(spine.Physics.update);
 	}

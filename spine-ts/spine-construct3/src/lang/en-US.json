@@ -261,6 +261,17 @@
                 "desc": "Name of the custom skin to apply"
               }
             }
+          },
+          "set-animation-speed": {
+            "list-name": "Set animation speed",
+            "display-text": "Set animation speed to {0}",
+            "description": "Set the playback speed of animations (1.0 = normal, 2.0 = double speed, 0.5 = half speed)",
+            "params": {
+              "speed": {
+                "name": "Speed",
+                "desc": "Animation speed multiplier (1.0 is normal speed)"
+              }
+            }
           }
         },
         "expressions": {

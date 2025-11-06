@@ -51,6 +51,10 @@ C3.Plugins.EsotericSoftware_SpineConstruct3.Acts =
 
 	SetCustomSkin (this: SDKInstanceClass, skinName: string) {
 		this.setCustomSkin(skinName);
+	},
+
+	SetAnimationSpeed (this: SDKInstanceClass, speed: number) {
+		this.setAnimationSpeed(speed);
 	}
 
 };

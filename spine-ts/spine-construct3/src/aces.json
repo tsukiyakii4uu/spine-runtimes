@@ -187,6 +187,17 @@
             "type": "string"
           }
         ]
+      },
+      {
+        "id": "set-animation-speed",
+        "scriptName": "SetAnimationSpeed",
+        "highlight": false,
+        "params": [
+          {
+            "id": "speed",
+            "type": "number"
+          }
+        ]
       }
     ],
     "expressions": [
