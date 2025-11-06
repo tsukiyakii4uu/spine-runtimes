@@ -150,6 +150,43 @@
             "type": "string"
           }
         ]
+      },
+      {
+        "id": "create-custom-skin",
+        "scriptName": "CreateCustomSkin",
+        "highlight": false,
+        "params": [
+          {
+            "id": "skin-name",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "id": "add-custom-skin",
+        "scriptName": "AddCustomSkin",
+        "highlight": false,
+        "params": [
+          {
+            "id": "custom-skin-name",
+            "type": "string"
+          },
+          {
+            "id": "skin-to-add-name",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "id": "set-custom-skin",
+        "scriptName": "SetCustomSkin",
+        "highlight": false,
+        "params": [
+          {
+            "id": "skin-name",
+            "type": "string"
+          }
+        ]
       }
     ],
     "expressions": [

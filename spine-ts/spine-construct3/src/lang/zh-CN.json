@@ -226,6 +226,43 @@
             }
           }
         },
+        "create-custom-skin": {
+          "list-name": "创建自定义皮肤",
+          "display-text": "创建自定义皮肤{0}",
+          "description": "创建一个可以组合多个皮肤的新自定义皮肤",
+          "params": {
+            "skin-name": {
+              "name": "皮肤名称",
+              "desc": "自定义皮肤的名称"
+            }
+          }
+        },
+        "add-custom-skin": {
+          "list-name": "添加到自定义皮肤",
+          "display-text": "将皮肤{1}添加到自定义皮肤{0}",
+          "description": "将现有皮肤添加到自定义皮肤",
+          "params": {
+            "custom-skin-name": {
+              "name": "自定义皮肤名称",
+              "desc": "要添加到的自定义皮肤名称"
+            },
+            "skin-to-add-name": {
+              "name": "要添加的皮肤",
+              "desc": "要添加的现有皮肤名称"
+            }
+          }
+        },
+        "set-custom-skin": {
+          "list-name": "设置自定义皮肤",
+          "display-text": "设置自定义皮肤{0}",
+          "description": "将自定义皮肤应用到骨架",
+          "params": {
+            "skin-name": {
+              "name": "皮肤名称",
+              "desc": "要应用的自定义皮肤名称"
+            }
+          }
+        },
         "expressions": {
           "double": {
             "description": "将数字翻倍。",

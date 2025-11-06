@@ -224,6 +224,43 @@
                 "desc": "Name of the attachment to set"
               }
             }
+          },
+          "create-custom-skin": {
+            "list-name": "Create custom skin",
+            "display-text": "Create custom skin {0}",
+            "description": "Create a new custom skin that can combine multiple skins",
+            "params": {
+              "skin-name": {
+                "name": "Skin name",
+                "desc": "Name for the custom skin"
+              }
+            }
+          },
+          "add-custom-skin": {
+            "list-name": "Add to custom skin",
+            "display-text": "Add skin {1} to custom skin {0}",
+            "description": "Add an existing skin to a custom skin",
+            "params": {
+              "custom-skin-name": {
+                "name": "Custom skin name",
+                "desc": "Name of the custom skin to add to"
+              },
+              "skin-to-add-name": {
+                "name": "Skin to add",
+                "desc": "Name of the existing skin to add"
+              }
+            }
+          },
+          "set-custom-skin": {
+            "list-name": "Set custom skin",
+            "display-text": "Set custom skin {0}",
+            "description": "Apply a custom skin to the skeleton",
+            "params": {
+              "skin-name": {
+                "name": "Skin name",
+                "desc": "Name of the custom skin to apply"
+              }
+            }
           }
         },
         "expressions": {

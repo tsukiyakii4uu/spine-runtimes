@@ -39,6 +39,18 @@ C3.Plugins.EsotericSoftware_SpineConstruct3.Acts =
 
 	SetAttachment (this: SDKInstanceClass, slotName: string, attachmentName: string) {
 		this.setAttachment(slotName, attachmentName === "" ? null : attachmentName);
+	},
+
+	CreateCustomSkin (this: SDKInstanceClass, skinName: string) {
+		this.createCustomSkin(skinName);
+	},
+
+	AddCustomSkin (this: SDKInstanceClass, customSkinName: string, skinToAddName: string) {
+		this.addCustomSkin(customSkinName, skinToAddName);
+	},
+
+	SetCustomSkin (this: SDKInstanceClass, skinName: string) {
+		this.setCustomSkin(skinName);
 	}
 
 };

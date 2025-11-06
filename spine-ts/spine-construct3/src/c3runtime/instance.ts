@@ -1,4 +1,4 @@
-import type { AnimationState, AnimationStateListener, AssetLoader, Event, Skeleton, SkeletonRendererCore, TextureAtlas, } from "@esotericsoftware/spine-construct3-lib";
+import type { AnimationState, AnimationStateListener, AssetLoader, Event, Skeleton, SkeletonRendererCore, Skin, TextureAtlas, } from "@esotericsoftware/spine-construct3-lib";
 
 const C3 = globalThis.C3;
 const spine = globalThis.spine;
@@ -18,6 +18,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 	propScaleY = 1;
 	propFlipX = false;
 	isPlaying = true;
+	customSkins: Record<string, Skin> = {};
 
 	textureAtlas?: TextureAtlas;
 	renderer?: IRenderer;
@@ -181,6 +182,45 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 
 	public setAttachment (slotName: string, attachmentName: string | null) {
 		this.skeleton?.setAttachment(slotName, attachmentName);
+	}
+
+	public createCustomSkin (skinName: string) {
+		if (!this.skeleton) return;
+
+		if (this.customSkins[skinName]) {
+			this.customSkins[skinName].clear();
+		} else {
+			this.customSkins[skinName] = new spine.Skin(skinName);
+		}
+	}
+
+	public addCustomSkin (customSkinName: string, skinToAddName: string) {
+		if (!this.skeleton) return;
+
+		if (!this.customSkins[customSkinName]) {
+			console.warn(`[Spine] Custom skin "${customSkinName}" does not exist. Create it first.`);
+			return;
+		}
+
+		const skinToAdd = this.skeleton.data.findSkin(skinToAddName);
+		if (!skinToAdd) {
+			console.warn(`[Spine] Skin "${skinToAddName}" not found in skeleton data.`);
+			return;
+		}
+
+		this.customSkins[customSkinName].addSkin(skinToAdd);
+	}
+
+	public setCustomSkin (skinName: string) {
+		if (!this.skeleton) return;
+
+		if (!this.customSkins[skinName]) {
+			console.warn(`[Spine] Custom skin "${skinName}" does not exist.`);
+			return;
+		}
+
+		this.skeleton.setSkin(this.customSkins[skinName]);
+		this.skeleton.setupPose();
 	}
 
 	private _setSkin () {
