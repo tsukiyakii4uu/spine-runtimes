@@ -297,6 +297,25 @@
             }
           }
         },
+        "set-animation-mix": {
+          "list-name": "设置动画混合",
+          "display-text": "设置从动画{0}到{1}的混合时长为{2}",
+          "description": "设置从一个动画过渡到另一个动画时的混合/淡入淡出时长",
+          "params": {
+            "from-name": {
+              "name": "起始动画",
+              "desc": "过渡起始的动画名称"
+            },
+            "to-name": {
+              "name": "目标动画",
+              "desc": "过渡目标的动画名称"
+            },
+            "duration": {
+              "name": "时长",
+              "desc": "混合时长（秒）"
+            }
+          }
+        },
         "expressions": {
           "double": {
             "description": "将数字翻倍。",

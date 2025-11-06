@@ -295,6 +295,25 @@
                 "desc": "Track index"
               }
             }
+          },
+          "set-animation-mix": {
+            "list-name": "Set animation mix",
+            "display-text": "Set animation mix from {0} to {1} duration {2}",
+            "description": "Set the blend/crossfade duration when transitioning from one animation to another",
+            "params": {
+              "from-name": {
+                "name": "From animation",
+                "desc": "Name of the animation to transition from"
+              },
+              "to-name": {
+                "name": "To animation",
+                "desc": "Name of the animation to transition to"
+              },
+              "duration": {
+                "name": "Duration",
+                "desc": "Blend duration in seconds"
+              }
+            }
           }
         },
         "expressions": {

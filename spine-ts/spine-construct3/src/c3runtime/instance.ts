@@ -249,6 +249,17 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		}
 	}
 
+	public setAnimationMix (fromName: string, toName: string, duration: number) {
+		const stateData = this.state?.data;
+		if (!stateData) return;
+
+		try {
+			stateData.setMix(fromName, toName, duration);
+		} catch (error) {
+			console.error('[Spine] setAnimationMix error:', error);
+		}
+	}
+
 	private _setSkin () {
 		const { skeleton } = this;
 		if (!skeleton) return;

@@ -207,10 +207,7 @@
           {
             "id": "units",
             "type": "combo",
-            "items": [
-              "seconds",
-              "ratio"
-            ]
+            "items": ["seconds", "ratio"]
           },
           {
             "id": "time",
@@ -218,6 +215,25 @@
           },
           {
             "id": "track",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "set-animation-mix",
+        "scriptName": "SetAnimationMix",
+        "highlight": false,
+        "params": [
+          {
+            "id": "from-name",
+            "type": "string"
+          },
+          {
+            "id": "to-name",
+            "type": "string"
+          },
+          {
+            "id": "duration",
             "type": "number"
           }
         ]
