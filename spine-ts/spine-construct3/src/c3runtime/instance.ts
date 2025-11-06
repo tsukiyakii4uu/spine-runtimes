@@ -19,6 +19,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 	propFlipX = false;
 	isPlaying = true;
 	animationSpeed = 1.0;
+	physicsMode = spine.Physics.update;
 	customSkins: Record<string, Skin> = {};
 
 	textureAtlas?: TextureAtlas;
@@ -260,6 +261,16 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		}
 	}
 
+	public setPhysicsMode (mode: 0 | 1 | 2 | 3) {
+		switch (mode) {
+			case 0: this.physicsMode = spine.Physics.none; break;
+			case 1: this.physicsMode = spine.Physics.reset; break;
+			case 2: this.physicsMode = spine.Physics.update; break;
+			case 3: this.physicsMode = spine.Physics.pose; break;
+			default: console.warn('[Spine] Invalid physics mode:', mode);
+		}
+	}
+
 	private _setSkin () {
 		const { skeleton } = this;
 		if (!skeleton) return;
@@ -294,15 +305,15 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 	}
 
 	private update (delta: number) {
-		const { state, skeleton } = this;
+		const { state, skeleton, animationSpeed, physicsMode } = this;
 
 		if (!skeleton || !state) return;
 
-		const adjustedDelta = delta * this.animationSpeed;
+		const adjustedDelta = delta * animationSpeed;
 		state.update(adjustedDelta);
 		skeleton.update(adjustedDelta);
 		state.apply(skeleton);
-		skeleton.updateWorldTransform(spine.Physics.update);
+		skeleton.updateWorldTransform(physicsMode);
 	}
 
 	private async _loadAtlas () {

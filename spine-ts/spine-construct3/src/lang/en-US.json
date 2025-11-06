@@ -314,6 +314,23 @@
                 "desc": "Blend duration in seconds"
               }
             }
+          },
+          "set-physics-mode": {
+            "list-name": "Set physics mode",
+            "display-text": "Set physics mode to {0}",
+            "description": "Set the physics mode to control how physics constraints are updated and applied",
+            "params": {
+              "physics-mode": {
+                "name": "Physics mode",
+                "desc": "Physics mode",
+                "items": {
+                  "none": "None (physics not updated or applied)",
+                  "reset": "Reset (physics reset to current pose)",
+                  "update": "Update (physics updated and applied)",
+                  "pose": "Pose (physics pose applied without update)"
+                }
+              }
+            }
           }
         },
         "expressions": {

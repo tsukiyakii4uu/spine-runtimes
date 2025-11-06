@@ -316,6 +316,23 @@
             }
           }
         },
+        "set-physics-mode": {
+          "list-name": "设置物理模式",
+          "display-text": "设置物理模式为{0}",
+          "description": "设置物理模式以控制物理约束的更新和应用方式",
+          "params": {
+            "physics-mode": {
+              "name": "物理模式",
+              "desc": "物理模式",
+              "items": {
+                "none": "无（物理不更新也不应用）",
+                "reset": "重置（物理重置为当前姿势）",
+                "update": "更新（物理更新并应用）",
+                "pose": "姿势（应用物理姿势但不更新）"
+              }
+            }
+          }
+        },
         "expressions": {
           "double": {
             "description": "将数字翻倍。",

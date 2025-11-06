@@ -237,6 +237,18 @@
             "type": "number"
           }
         ]
+      },
+      {
+        "id": "set-physics-mode",
+        "scriptName": "SetPhysicsMode",
+        "highlight": false,
+        "params": [
+          {
+            "id": "physics-mode",
+            "type": "combo",
+            "items": ["none", "reset", "update", "pose"]
+          }
+        ]
       }
     ],
     "expressions": [
