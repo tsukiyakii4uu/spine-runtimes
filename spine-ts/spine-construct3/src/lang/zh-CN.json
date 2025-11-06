@@ -344,6 +344,42 @@
             }
           }
         },
+        "set-track-alpha": {
+          "list-name": "设置轨道透明度",
+          "display-text": "在轨道{1}上设置透明度为{0}",
+          "description": "设置动画轨道的透明度/不透明度。用于混合不同轨道上的动画。",
+          "params": {
+            "alpha": {
+              "name": "透明度",
+              "desc": "透明度值（0.0 到 1.0，其中 0 为完全透明，1 为完全不透明）"
+            },
+            "track-index": {
+              "name": "轨道索引",
+              "desc": "要设置透明度的轨道索引"
+            }
+          }
+        },
+        "set-track-mix-blend": {
+          "list-name": "设置轨道混合模式",
+          "display-text": "在轨道{1}上设置混合模式为{0}",
+          "description": "设置动画轨道的混合模式。控制动画如何分层和组合。",
+          "params": {
+            "mix-blend": {
+              "name": "混合模式",
+              "desc": "混合模式",
+              "items": {
+                "setup": "设置（过渡到/从设置姿势）",
+                "first": "首次（用于首次应用的动画）",
+                "replace": "替换（用于分层动画）",
+                "add": "叠加（用于分层动画的叠加混合）"
+              }
+            },
+            "track-index": {
+              "name": "轨道索引",
+              "desc": "要设置混合模式的轨道索引"
+            }
+          }
+        },
         "set-slot-color": {
           "list-name": "设置插槽颜色",
           "display-text": "设置插槽{0}的颜色为{1}",

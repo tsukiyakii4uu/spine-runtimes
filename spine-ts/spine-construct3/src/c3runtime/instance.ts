@@ -1,4 +1,4 @@
-import type { AnimationState, AnimationStateListener, AssetLoader, Event, Skeleton, SkeletonRendererCore, Skin, TextureAtlas, } from "@esotericsoftware/spine-construct3-lib";
+import { type AnimationState, type AnimationStateListener, type AssetLoader, type Event, MathUtils, type Skeleton, type SkeletonRendererCore, type Skin, type TextureAtlas, } from "@esotericsoftware/spine-construct3-lib";
 
 const C3 = globalThis.C3;
 const spine = globalThis.spine;
@@ -279,6 +279,44 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		}
 
 		skeleton.color.setFromString(color);
+	}
+
+	public setTrackAlpha (alpha: number, trackIndex: number) {
+		const { state } = this;
+		if (!state) {
+			console.warn('[Spine] setAlpha: no state');
+			return;
+		}
+
+		const track = state.tracks[trackIndex];
+		if (!track) {
+			console.warn(`[Spine] setAlpha: track ${trackIndex} not found`);
+			return;
+		}
+
+		track.alpha = MathUtils.clamp(0, 1, alpha);
+	}
+
+	public setTrackMixBlend (mixBlend: 0 | 1 | 2 | 3, trackIndex: number) {
+		const { state } = this;
+		if (!state) {
+			console.warn('[Spine] setMixBlend: no state');
+			return;
+		}
+
+		const track = state.tracks[trackIndex];
+		if (!track) {
+			console.warn(`[Spine] setMixBlend: track ${trackIndex} not found`);
+			return;
+		}
+
+		switch (mixBlend) {
+			case 0: track.mixBlend = spine.MixBlend.setup; break;
+			case 1: track.mixBlend = spine.MixBlend.first; break;
+			case 2: track.mixBlend = spine.MixBlend.replace; break;
+			case 3: track.mixBlend = spine.MixBlend.add; break;
+			default: console.warn('[Spine] Invalid mix blend mode:', mixBlend);
+		}
 	}
 
 	public setSlotColor (slotName: string, color: string) {

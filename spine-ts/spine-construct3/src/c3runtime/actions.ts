@@ -73,6 +73,14 @@ C3.Plugins.EsotericSoftware_SpineConstruct3.Acts =
 		this.setSkeletonColor(color);
 	},
 
+	SetTrackAlpha (this: SDKInstanceClass, alpha: number, trackIndex: number) {
+		this.setTrackAlpha(alpha, trackIndex);
+	},
+
+	SetTrackMixBlend (this: SDKInstanceClass, mixBlend: 0 | 1 | 2 | 3, trackIndex: number) {
+		this.setTrackMixBlend(mixBlend, trackIndex);
+	},
+
 	SetSlotColor (this: SDKInstanceClass, slotName: string, color: string) {
 		this.setSlotColor(slotName, color);
 	},

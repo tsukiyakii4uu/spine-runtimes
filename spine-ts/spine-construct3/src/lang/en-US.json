@@ -343,6 +343,42 @@
               }
             }
           },
+          "set-track-alpha": {
+            "list-name": "Set track alpha",
+            "display-text": "Set alpha {0} on track {1}",
+            "description": "Set the alpha/opacity of an animation track. Used for blending animations on different tracks.",
+            "params": {
+              "alpha": {
+                "name": "Alpha",
+                "desc": "Alpha value (0.0 to 1.0, where 0 is transparent and 1 is opaque)"
+              },
+              "track-index": {
+                "name": "Track index",
+                "desc": "Track index to set alpha for"
+              }
+            }
+          },
+          "set-track-mix-blend": {
+            "list-name": "Set track mix blend",
+            "display-text": "Set mix blend {0} on track {1}",
+            "description": "Set the mix blend mode for an animation track. Controls how animations are layered and combined.",
+            "params": {
+              "mix-blend": {
+                "name": "Mix blend",
+                "desc": "Mix blend mode",
+                "items": {
+                  "setup": "Setup (transition to/from setup pose)",
+                  "first": "First (for first animations applied)",
+                  "replace": "Replace (for layered animations)",
+                  "add": "Add (additive blending for layered animations)"
+                }
+              },
+              "track-index": {
+                "name": "Track index",
+                "desc": "Track index to set mix blend for"
+              }
+            }
+          },
           "set-slot-color": {
             "list-name": "Set slot color",
             "display-text": "Set slot {0} color to {1}",

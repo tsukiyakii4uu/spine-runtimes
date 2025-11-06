@@ -262,6 +262,37 @@
         ]
       },
       {
+        "id": "set-track-alpha",
+        "scriptName": "SetTrackAlpha",
+        "highlight": false,
+        "params": [
+          {
+            "id": "alpha",
+            "type": "number"
+          },
+          {
+            "id": "track-index",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "set-track-mix-blend",
+        "scriptName": "SetTrackMixBlend",
+        "highlight": false,
+        "params": [
+          {
+            "id": "mix-blend",
+            "type": "combo",
+            "items": ["setup", "first", "replace", "add"]
+          },
+          {
+            "id": "track-index",
+            "type": "number"
+          }
+        ]
+      },
+      {
         "id": "set-slot-color",
         "scriptName": "SetSlotColor",
         "highlight": false,
