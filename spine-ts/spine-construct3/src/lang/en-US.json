@@ -331,6 +331,32 @@
                 }
               }
             }
+          },
+          "set-slot-color": {
+            "list-name": "Set slot color",
+            "display-text": "Set slot {0} color to {1}",
+            "description": "Set the color of a slot. Accepts hex colors (#RRGGBB or #RRGGBBAA) or color names.",
+            "params": {
+              "slot-name": {
+                "name": "Slot name",
+                "desc": "Name of the slot to modify"
+              },
+              "color": {
+                "name": "Color",
+                "desc": "Color value (hex like #FF0000 or color name)"
+              }
+            }
+          },
+          "reset-slot-colors": {
+            "list-name": "Reset slot colors",
+            "display-text": "Reset slot colors for {0}",
+            "description": "Reset slot colors to their setup pose values. Leave slot name empty to reset all slots.",
+            "params": {
+              "slot-name": {
+                "name": "Slot name",
+                "desc": "Name of the slot to reset. Leave empty to reset all slots."
+              }
+            }
           }
         },
         "expressions": {

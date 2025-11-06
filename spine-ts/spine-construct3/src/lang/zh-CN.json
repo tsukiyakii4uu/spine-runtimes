@@ -333,6 +333,32 @@
             }
           }
         },
+        "set-slot-color": {
+          "list-name": "设置插槽颜色",
+          "display-text": "设置插槽{0}的颜色为{1}",
+          "description": "设置插槽的颜色。接受十六进制颜色（#RRGGBB 或 #RRGGBBAA）或颜色名称。",
+          "params": {
+            "slot-name": {
+              "name": "插槽名称",
+              "desc": "要修改的插槽名称"
+            },
+            "color": {
+              "name": "颜色",
+              "desc": "颜色值（十六进制如 #FF0000 或颜色名称）"
+            }
+          }
+        },
+        "reset-slot-colors": {
+          "list-name": "重置插槽颜色",
+          "display-text": "重置插槽{0}的颜色",
+          "description": "将插槽颜色重置为设置姿势值。留空插槽名称以重置所有插槽。",
+          "params": {
+            "slot-name": {
+              "name": "插槽名称",
+              "desc": "要重置的插槽名称。留空以重置所有插槽。"
+            }
+          }
+        },
         "expressions": {
           "double": {
             "description": "将数字翻倍。",

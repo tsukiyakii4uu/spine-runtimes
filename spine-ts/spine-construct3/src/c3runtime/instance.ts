@@ -271,6 +271,42 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		}
 	}
 
+	public setSlotColor (slotName: string, color: string) {
+		const { skeleton } = this;
+		if (!skeleton) {
+			console.warn('[Spine] setSlotColor: no skeleton');
+			return;
+		}
+
+		const slot = skeleton.findSlot(slotName);
+		if (!slot) {
+			console.warn(`[Spine] setSlotColor: slot not found: ${slotName}`);
+			return;
+		}
+
+		slot.pose.color.setFromString(color);
+	}
+
+	public resetSlotColors (slotName: string = "") {
+		const { skeleton } = this;
+		if (!skeleton) {
+			console.warn('[Spine] resetSlotColors: no skeleton');
+			return;
+		}
+
+		if (slotName === "") {
+			for (const slot of skeleton.slots)
+				slot.pose.color.setFromColor(slot.data.setup.color);
+		} else {
+			const slot = skeleton.findSlot(slotName);
+			if (!slot) {
+				console.warn(`[Spine] resetSlotColors: slot not found: ${slotName}`);
+				return;
+			}
+			slot.pose.color.setFromColor(slot.data.setup.color);
+		}
+	}
+
 	private _setSkin () {
 		const { skeleton } = this;
 		if (!skeleton) return;

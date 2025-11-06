@@ -249,6 +249,32 @@
             "items": ["none", "reset", "update", "pose"]
           }
         ]
+      },
+      {
+        "id": "set-slot-color",
+        "scriptName": "SetSlotColor",
+        "highlight": false,
+        "params": [
+          {
+            "id": "slot-name",
+            "type": "string"
+          },
+          {
+            "id": "color",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "id": "reset-slot-colors",
+        "scriptName": "ResetSlotColors",
+        "highlight": false,
+        "params": [
+          {
+            "id": "slot-name",
+            "type": "string"
+          }
+        ]
       }
     ],
     "expressions": [

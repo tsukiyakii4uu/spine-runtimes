@@ -67,6 +67,14 @@ C3.Plugins.EsotericSoftware_SpineConstruct3.Acts =
 
 	SetPhysicsMode (this: SDKInstanceClass, mode: 0 | 1 | 2 | 3) {
 		this.setPhysicsMode(mode);
+	},
+
+	SetSlotColor (this: SDKInstanceClass, slotName: string, color: string) {
+		this.setSlotColor(slotName, color);
+	},
+
+	ResetSlotColors (this: SDKInstanceClass, slotName: string) {
+		this.resetSlotColors(slotName);
 	}
 
 };
