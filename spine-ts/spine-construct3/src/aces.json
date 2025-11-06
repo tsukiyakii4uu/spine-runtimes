@@ -251,6 +251,17 @@
         ]
       },
       {
+        "id": "set-skeleton-color",
+        "scriptName": "SetSkeletonColor",
+        "highlight": false,
+        "params": [
+          {
+            "id": "color",
+            "type": "string"
+          }
+        ]
+      },
+      {
         "id": "set-slot-color",
         "scriptName": "SetSlotColor",
         "highlight": false,

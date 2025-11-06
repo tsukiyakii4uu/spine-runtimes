@@ -271,6 +271,16 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		}
 	}
 
+	public setSkeletonColor (color: string) {
+		const { skeleton } = this;
+		if (!skeleton) {
+			console.warn('[Spine] setSkeletonColor: no skeleton');
+			return;
+		}
+
+		skeleton.color.setFromString(color);
+	}
+
 	public setSlotColor (slotName: string, color: string) {
 		const { skeleton } = this;
 		if (!skeleton) {

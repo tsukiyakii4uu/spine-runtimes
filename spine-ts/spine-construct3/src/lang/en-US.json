@@ -332,6 +332,17 @@
               }
             }
           },
+          "set-skeleton-color": {
+            "list-name": "Set skeleton color",
+            "display-text": "Set skeleton color to {0}",
+            "description": "Set the color of the entire skeleton. Accepts hex colors (#RRGGBB or #RRGGBBAA) or color names.",
+            "params": {
+              "color": {
+                "name": "Color",
+                "desc": "Color value (hex like #FF0000 or color name)"
+              }
+            }
+          },
           "set-slot-color": {
             "list-name": "Set slot color",
             "display-text": "Set slot {0} color to {1}",

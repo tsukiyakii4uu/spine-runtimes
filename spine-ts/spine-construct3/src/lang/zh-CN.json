@@ -333,6 +333,17 @@
             }
           }
         },
+        "set-skeleton-color": {
+          "list-name": "设置骨架颜色",
+          "display-text": "设置骨架颜色为{0}",
+          "description": "设置整个骨架的颜色。接受十六进制颜色（#RRGGBB 或 #RRGGBBAA）或颜色名称。",
+          "params": {
+            "color": {
+              "name": "颜色",
+              "desc": "颜色值（十六进制如 #FF0000 或颜色名称）"
+            }
+          }
+        },
         "set-slot-color": {
           "list-name": "设置插槽颜色",
           "display-text": "设置插槽{0}的颜色为{1}",
