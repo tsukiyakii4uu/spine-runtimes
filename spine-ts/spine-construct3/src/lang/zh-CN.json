@@ -426,6 +426,36 @@
                 "desc": "插槽的名称"
               }
             }
+          },
+          "bone-x": {
+            "description": "获取骨骼的世界X位置。",
+            "translated-name": "BoneX",
+            "params": {
+              "bone-name": {
+                "name": "骨骼名称",
+                "desc": "骨骼的名称"
+              }
+            }
+          },
+          "bone-y": {
+            "description": "获取骨骼的世界Y位置。",
+            "translated-name": "BoneY",
+            "params": {
+              "bone-name": {
+                "name": "骨骼名称",
+                "desc": "骨骼的名称"
+              }
+            }
+          },
+          "bone-rotation": {
+            "description": "获取骨骼的世界旋转角度。",
+            "translated-name": "BoneRotation",
+            "params": {
+              "bone-name": {
+                "name": "骨骼名称",
+                "desc": "骨骼的名称"
+              }
+            }
           }
         }
       }

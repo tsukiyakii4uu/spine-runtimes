@@ -355,6 +355,77 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		}
 	}
 
+	public getBoneX (boneName: string): number {
+		const { skeleton } = this;
+		if (!skeleton) {
+			console.warn('[Spine] getBoneX: no skeleton');
+			return 0;
+		}
+
+		const bone = skeleton.findBone(boneName);
+		if (!bone) {
+			console.warn(`[Spine] getBoneX: bone not found: ${boneName}`);
+			return 0;
+		}
+
+		const x = bone.applied.worldX;
+		const y = bone.applied.worldY;
+		const offsetX = this.x + this.propOffsetX;
+		const offsetAngle = this.angle + this.propOffsetAngle;
+
+		if (offsetAngle) {
+			const cos = Math.cos(offsetAngle);
+			const sin = Math.sin(offsetAngle);
+			return x * cos - y * sin + offsetX;
+		}
+		return x + offsetX;
+	}
+
+	public getBoneY (boneName: string): number {
+		const { skeleton } = this;
+		if (!skeleton) {
+			console.warn('[Spine] getBoneY: no skeleton');
+			return 0;
+		}
+
+		const bone = skeleton.findBone(boneName);
+		if (!bone) {
+			console.warn(`[Spine] getBoneY: bone not found: ${boneName}`);
+			return 0;
+		}
+
+		const x = bone.applied.worldX;
+		const y = bone.applied.worldY;
+		const offsetY = this.y + this.propOffsetY;
+		const offsetAngle = this.angle + this.propOffsetAngle;
+
+		if (offsetAngle) {
+			const cos = Math.cos(offsetAngle);
+			const sin = Math.sin(offsetAngle);
+			return x * sin + y * cos + offsetY;
+		}
+		return y + offsetY;
+	}
+
+	public getBoneRotation (boneName: string): number {
+		const { skeleton } = this;
+		if (!skeleton) {
+			console.warn('[Spine] getBoneRotation: no skeleton');
+			return 0;
+		}
+
+		const bone = skeleton.findBone(boneName);
+		if (!bone) {
+			console.warn(`[Spine] getBoneRotation: bone not found: ${boneName}`);
+			return 0;
+		}
+
+		const boneRotation = bone.applied.getWorldRotationX();
+		const offsetAngle = this.angle + this.propOffsetAngle;
+
+		return boneRotation + (offsetAngle * 180 / Math.PI);
+	}
+
 	private _setSkin () {
 		const { skeleton } = this;
 		if (!skeleton) return;

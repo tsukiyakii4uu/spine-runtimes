@@ -343,6 +343,42 @@
             "type": "string"
           }
         ]
+      },
+      {
+        "id": "bone-x",
+        "expressionName": "BoneX",
+        "highlight": false,
+        "returnType": "number",
+        "params": [
+          {
+            "id": "bone-name",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "id": "bone-y",
+        "expressionName": "BoneY",
+        "highlight": false,
+        "returnType": "number",
+        "params": [
+          {
+            "id": "bone-name",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "id": "bone-rotation",
+        "expressionName": "BoneRotation",
+        "highlight": false,
+        "returnType": "number",
+        "params": [
+          {
+            "id": "bone-name",
+            "type": "string"
+          }
+        ]
       }
     ]
   }

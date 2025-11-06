@@ -426,6 +426,36 @@
                 "desc": "Name of the slot"
               }
             }
+          },
+          "bone-x": {
+            "description": "Get the world X position of a bone.",
+            "translated-name": "BoneX",
+            "params": {
+              "bone-name": {
+                "name": "Bone name",
+                "desc": "Name of the bone"
+              }
+            }
+          },
+          "bone-y": {
+            "description": "Get the world Y position of a bone.",
+            "translated-name": "BoneY",
+            "params": {
+              "bone-name": {
+                "name": "Bone name",
+                "desc": "Name of the bone"
+              }
+            }
+          },
+          "bone-rotation": {
+            "description": "Get the world rotation of a bone.",
+            "translated-name": "BoneRotation",
+            "params": {
+              "bone-name": {
+                "name": "Bone name",
+                "desc": "Name of the bone"
+              }
+            }
           }
         }
       }
