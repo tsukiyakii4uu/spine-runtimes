@@ -1,4 +1,4 @@
-import { type AnimationState, type AnimationStateListener, type AssetLoader, type Event, MathUtils, type Skeleton, type SkeletonRendererCore, type Skin, type TextureAtlas, } from "@esotericsoftware/spine-construct3-lib";
+import type { AnimationState, AnimationStateListener, AssetLoader, Event, Skeleton, SkeletonRendererCore, Skin, TextureAtlas, } from "@esotericsoftware/spine-construct3-lib";
 
 const C3 = globalThis.C3;
 const spine = globalThis.spine;
@@ -294,7 +294,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 			return;
 		}
 
-		track.alpha = MathUtils.clamp(0, 1, alpha);
+		track.alpha = spine.MathUtils.clamp(0, 1, alpha);
 	}
 
 	public setTrackMixBlend (mixBlend: 0 | 1 | 2 | 3, trackIndex: number) {
