@@ -198,6 +198,29 @@
             "type": "number"
           }
         ]
+      },
+      {
+        "id": "set-animation-time",
+        "scriptName": "SetAnimationTime",
+        "highlight": false,
+        "params": [
+          {
+            "id": "units",
+            "type": "combo",
+            "items": [
+              "seconds",
+              "ratio"
+            ]
+          },
+          {
+            "id": "time",
+            "type": "number"
+          },
+          {
+            "id": "track",
+            "type": "number"
+          }
+        ]
       }
     ],
     "expressions": [

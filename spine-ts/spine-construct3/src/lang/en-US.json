@@ -272,6 +272,29 @@
                 "desc": "Animation speed multiplier (1.0 is normal speed)"
               }
             }
+          },
+          "set-animation-time": {
+            "list-name": "Set animation time",
+            "display-text": "Set track {2} animation time to {1} ({0})",
+            "description": "Set the current time of an animation on a track",
+            "params": {
+              "units": {
+                "name": "Units",
+                "desc": "Time units",
+                "items": {
+                  "seconds": "Seconds (absolute time)",
+                  "ratio": "Ratio (0.0 to 1.0)"
+                }
+              },
+              "time": {
+                "name": "Time",
+                "desc": "Time value (in seconds or as a ratio 0.0-1.0)"
+              },
+              "track": {
+                "name": "Track",
+                "desc": "Track index"
+              }
+            }
           }
         },
         "expressions": {

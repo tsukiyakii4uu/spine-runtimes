@@ -228,6 +228,27 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		this.animationSpeed = speed;
 	}
 
+	public setAnimationTime (units: 0 | 1, time: number, track: number) {
+		if (!this.state) return;
+
+		const trackEntry = this.state.tracks[track];
+		if (!trackEntry) return;
+
+		if (units === 0) {
+			if (time < trackEntry.animationStart || time > trackEntry.animationEnd) {
+				console.warn(`[Spine] Animation time ${time} is out of bounds [${trackEntry.animationStart}, ${trackEntry.animationEnd}]`);
+				return;
+			}
+			trackEntry.trackTime = time;
+		} else {
+			if (time < 0 || time > 1) {
+				console.warn(`[Spine] Animation time ratio ${time} is out of bounds [0, 1]`);
+				return;
+			}
+			trackEntry.trackTime = time * (trackEntry.animationEnd - trackEntry.animationStart);
+		}
+	}
+
 	private _setSkin () {
 		const { skeleton } = this;
 		if (!skeleton) return;

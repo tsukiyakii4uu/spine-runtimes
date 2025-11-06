@@ -274,6 +274,29 @@
             }
           }
         },
+        "set-animation-time": {
+          "list-name": "设置动画时间",
+          "display-text": "将轨道{2}的动画时间设置为{1}（{0}）",
+          "description": "设置轨道上动画的当前时间",
+          "params": {
+            "units": {
+              "name": "单位",
+              "desc": "时间单位",
+              "items": {
+                "seconds": "秒（绝对时间）",
+                "ratio": "比例（0.0到1.0）"
+              }
+            },
+            "time": {
+              "name": "时间",
+              "desc": "时间值（秒或0.0-1.0的比例）"
+            },
+            "track": {
+              "name": "轨道",
+              "desc": "轨道索引"
+            }
+          }
+        },
         "expressions": {
           "double": {
             "description": "将数字翻倍。",

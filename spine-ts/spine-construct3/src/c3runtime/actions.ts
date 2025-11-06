@@ -55,6 +55,10 @@ C3.Plugins.EsotericSoftware_SpineConstruct3.Acts =
 
 	SetAnimationSpeed (this: SDKInstanceClass, speed: number) {
 		this.setAnimationSpeed(speed);
+	},
+
+	SetAnimationTime (this: SDKInstanceClass, units: 0 | 1, time: number, track: number) {
+		this.setAnimationTime(units, time, track);
 	}
 
 };
