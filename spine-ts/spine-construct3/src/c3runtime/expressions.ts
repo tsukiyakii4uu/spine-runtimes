@@ -31,6 +31,10 @@ C3.Plugins.EsotericSoftware_SpineConstruct3.Exps =
 
 	CurrentSkin (this: SDKInstanceClass) {
 		return this.getCurrentSkin();
+	},
+
+	CurrentAnimation (this: SDKInstanceClass, trackIndex: number) {
+		return this.getCurrentAnimation(trackIndex);
 	}
 };
 

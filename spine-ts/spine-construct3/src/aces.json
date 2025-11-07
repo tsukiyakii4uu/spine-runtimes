@@ -385,6 +385,18 @@
         "expressionName": "CurrentSkin",
         "highlight": false,
         "returnType": "string"
+      },
+      {
+        "id": "current-animation",
+        "expressionName": "CurrentAnimation",
+        "highlight": false,
+        "returnType": "string",
+        "params": [
+          {
+            "id": "track-index",
+            "type": "number"
+          }
+        ]
       }
     ]
   }

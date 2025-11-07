@@ -460,6 +460,16 @@
           "current-skin": {
             "description": "获取当前皮肤名称。如果有多个皮肤处于活动状态，返回逗号分隔的名称。",
             "translated-name": "CurrentSkin"
+          },
+          "current-animation": {
+            "description": "获取特定轨道上当前播放的动画名称。",
+            "translated-name": "CurrentAnimation",
+            "params": {
+              "track-index": {
+                "name": "轨道索引",
+                "desc": "轨道的索引"
+              }
+            }
           }
         }
       }

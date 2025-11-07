@@ -435,6 +435,18 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		return skin.name;
 	}
 
+	public getCurrentAnimation (trackIndex: number): string {
+		if (!this.skeleton) return "";
+
+		const { state } = this;
+		if (!state) return "";
+
+		const track = state.tracks[trackIndex];
+		if (!track || !track.animation) return "";
+
+		return track.animation.name;
+	}
+
 	private _setSkin () {
 		const { skeleton } = this;
 		if (!skeleton) return;

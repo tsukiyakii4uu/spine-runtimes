@@ -460,6 +460,16 @@
           "current-skin": {
             "description": "Get the current skin name. Returns comma-separated names if multiple skins are active.",
             "translated-name": "CurrentSkin"
+          },
+          "current-animation": {
+            "description": "Get the name of the currently playing animation on a specific track.",
+            "translated-name": "CurrentAnimation",
+            "params": {
+              "track-index": {
+                "name": "Track index",
+                "desc": "Index of the track"
+              }
+            }
           }
         }
       }
