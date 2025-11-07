@@ -456,6 +456,10 @@
                 "desc": "骨骼的名称"
               }
             }
+          },
+          "current-skin": {
+            "description": "获取当前皮肤名称。如果有多个皮肤处于活动状态，返回逗号分隔的名称。",
+            "translated-name": "CurrentSkin"
           }
         }
       }

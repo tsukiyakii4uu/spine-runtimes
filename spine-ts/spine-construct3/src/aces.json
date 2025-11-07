@@ -379,6 +379,12 @@
             "type": "string"
           }
         ]
+      },
+      {
+        "id": "current-skin",
+        "expressionName": "CurrentSkin",
+        "highlight": false,
+        "returnType": "string"
       }
     ]
   }

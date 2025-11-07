@@ -426,6 +426,15 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		return boneRotation + (offsetAngle * 180 / Math.PI);
 	}
 
+	public getCurrentSkin (): string {
+		if (!this.skeleton) return "";
+
+		const skin = this.skeleton.skin;
+		if (!skin) return "";
+
+		return skin.name;
+	}
+
 	private _setSkin () {
 		const { skeleton } = this;
 		if (!skeleton) return;

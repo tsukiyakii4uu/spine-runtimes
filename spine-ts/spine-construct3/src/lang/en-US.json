@@ -456,6 +456,10 @@
                 "desc": "Name of the bone"
               }
             }
+          },
+          "current-skin": {
+            "description": "Get the current skin name. Returns comma-separated names if multiple skins are active.",
+            "translated-name": "CurrentSkin"
           }
         }
       }
