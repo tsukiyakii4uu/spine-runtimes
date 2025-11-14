@@ -44,6 +44,25 @@
         "id": "is-playing",
         "scriptName": "IsPlaying",
         "isTrigger": false
+      },
+      {
+        "id": "is-inside-slot",
+        "scriptName": "IsInsideSlot",
+        "isTrigger": false,
+        "params": [
+          {
+            "id": "x",
+            "type": "number"
+          },
+          {
+            "id": "y",
+            "type": "number"
+          },
+          {
+            "id": "slot-name",
+            "type": "string"
+          }
+        ]
       }
     ],
     "actions": [
@@ -317,6 +336,103 @@
             "type": "string"
           }
         ]
+      },
+      {
+        "id": "update-bone-pose",
+        "scriptName": "UpdateBonePose",
+        "highlight": false,
+        "params": [
+          {
+            "id": "x",
+            "type": "number"
+          },
+          {
+            "id": "y",
+            "type": "number"
+          },
+          {
+            "id": "bone-name",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "id": "attach-instance-to-bone",
+        "scriptName": "AttachInstanceToBone",
+        "highlight": false,
+        "params": [
+          {
+            "id": "uid",
+            "type": "number"
+          },
+          {
+            "id": "bone-name",
+            "type": "string"
+          },
+          {
+            "id": "offset-x",
+            "type": "number"
+          },
+          {
+            "id": "offset-y",
+            "type": "number"
+          },
+          {
+            "id": "offset-angle",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "id": "detach-instance-from-bone",
+        "scriptName": "DetachInstanceFromBone",
+        "highlight": false,
+        "params": [
+          {
+            "id": "bone-name",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "id": "add-handle",
+        "scriptName": "AddHandle",
+        "highlight": false,
+        "params": [
+          {
+            "id": "type",
+            "type": "combo",
+            "items": ["bone", "slot"]
+          },
+          {
+            "id": "name",
+            "type": "string"
+          },
+          {
+            "id": "radius",
+            "type": "number"
+          },
+          {
+            "id": "debug",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "id": "remove-handle",
+        "scriptName": "RemoveHandle",
+        "highlight": false,
+        "params": [
+          {
+            "id": "type",
+            "type": "combo",
+            "items": ["bone", "slot"]
+          },
+          {
+            "id": "name",
+            "type": "string"
+          }
+        ]
       }
     ],
     "expressions": [
@@ -371,6 +487,30 @@
       {
         "id": "bone-rotation",
         "expressionName": "BoneRotation",
+        "highlight": false,
+        "returnType": "number",
+        "params": [
+          {
+            "id": "bone-name",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "id": "bone-world-x",
+        "expressionName": "BoneWorldX",
+        "highlight": false,
+        "returnType": "number",
+        "params": [
+          {
+            "id": "bone-name",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "id": "bone-world-y",
+        "expressionName": "BoneWorldY",
         "highlight": false,
         "returnType": "number",
         "params": [

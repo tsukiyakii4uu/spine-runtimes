@@ -29,6 +29,14 @@ C3.Plugins.EsotericSoftware_SpineConstruct3.Exps =
 		return this.getBoneRotation(boneName);
 	},
 
+	BoneWorldX (this: SDKInstanceClass, boneName: string) {
+		return this.getBoneWorldX(boneName);
+	},
+
+	BoneWorldY (this: SDKInstanceClass, boneName: string) {
+		return this.getBoneWorldY(boneName);
+	},
+
 	CurrentSkin (this: SDKInstanceClass) {
 		return this.getCurrentSkin();
 	},

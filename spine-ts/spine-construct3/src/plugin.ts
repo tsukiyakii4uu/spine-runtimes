@@ -33,6 +33,7 @@ const PLUGIN_CLASS = class SpineC3Plugin extends SDK.IPluginBase {
 	static PROP_BOUNDS_OFFSET_ANGLE = "spine-bounds-offset-angle";
 	static PROP_SKELETON_SCALE_X = "spine-scale-x";
 	static PROP_SKELETON_SCALE_Y = "spine-scale-y";
+	static PROP_DEBUG_SKELETON = "spine-debug-skeleton";
 
 	static TYPE_BOUNDS_SETUP = "setup";
 	static TYPE_BOUNDS_ANIMATION_SKIN = "animation-skin";
@@ -71,6 +72,7 @@ const PLUGIN_CLASS = class SpineC3Plugin extends SDK.IPluginBase {
 			new SDK.PluginProperty("float", SpineC3Plugin.PROP_LOADER_SCALE, 1),
 			new SDK.PluginProperty("text", SpineC3Plugin.PROP_SKIN, ""),
 			new SDK.PluginProperty("text", SpineC3Plugin.PROP_ANIMATION, ""),
+			new SDK.PluginProperty("check", SpineC3Plugin.PROP_DEBUG_SKELETON, false),
 			new SDK.PluginProperty("info", SpineC3Plugin.PROP_ERRORS, {
 				infoCallback (inst) {
 					const errors = (inst.GetInstance() as unknown as { errors: Record<string, string> }).errors;

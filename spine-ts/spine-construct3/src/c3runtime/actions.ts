@@ -6,7 +6,7 @@ const C3 = globalThis.C3;
 C3.Plugins.EsotericSoftware_SpineConstruct3.Acts =
 {
 	Alert (this: SDKInstanceClass) {
-		alert(`Test property = ${this._getTestProperty()}`);
+		alert(`Test`);
 	},
 
 	SetSkin (this: SDKInstanceClass, skinList: string) {
@@ -87,6 +87,26 @@ C3.Plugins.EsotericSoftware_SpineConstruct3.Acts =
 
 	ResetSlotColors (this: SDKInstanceClass, slotName: string) {
 		this.resetSlotColors(slotName);
+	},
+
+	UpdateBonePose (this: SDKInstanceClass, x: number, y: number, boneName: string) {
+		this.updateBonePose(x, y, boneName);
+	},
+
+	AttachInstanceToBone (this: SDKInstanceClass, uid: number, boneName: string, offsetX: number, offsetY: number, offsetAngle: number) {
+		this.attachInstanceToBone(uid, boneName, offsetX, offsetY, offsetAngle);
+	},
+
+	DetachInstanceFromBone (this: SDKInstanceClass, boneName: string) {
+		this.detachInstanceFromBone(boneName);
+	},
+
+	AddHandle (this: SDKInstanceClass, type: 0 | 1, name: string, radius: number, debug: boolean) {
+		this.addDragHandle(type, name, radius, debug);
+	},
+
+	RemoveHandle (this: SDKInstanceClass, type: 0 | 1, name: string) {
+		this.removeDragHandle(type, name);
 	}
 
 };

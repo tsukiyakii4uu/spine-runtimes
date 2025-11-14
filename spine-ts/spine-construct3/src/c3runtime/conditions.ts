@@ -15,12 +15,15 @@ C3.Plugins.EsotericSoftware_SpineConstruct3.Cnds =
 		return eventMatches && trackMatches && animationMatches;
 	},
 	IsFlippedX (this: SpineC3Instance) {
-		return this.propFlipX;
+		return this.isFlippedX;
 	},
 	IsSkeletonLoaded (this: SpineC3Instance) {
 		return this.skeletonLoaded;
 	},
 	IsPlaying (this: SpineC3Instance) {
 		return this.isPlaying;
+	},
+	IsInsideSlot (this: SpineC3Instance, x: number, y: number, slotName: string) {
+		return this.isInsideSlot(x, y, slotName);
 	},
 };

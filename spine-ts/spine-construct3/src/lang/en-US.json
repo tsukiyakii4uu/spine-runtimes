@@ -58,6 +58,10 @@
             "name": "Scale Y",
             "desc": "Scale Y"
           },
+          "spine-debug-skeleton": {
+            "name": "Debug skeleton",
+            "desc": "Draw debug visualization of the skeleton bones"
+          },
           "spine-bounds-offset-x": {
             "name": "Offset X",
             "desc": "Offset X"
@@ -113,6 +117,25 @@
             "list-name": "Is playing",
             "display-text": "Is playing",
             "description": "Check if the animation is currently playing"
+          },
+          "is-inside-slot": {
+            "list-name": "Is point inside slot",
+            "display-text": "Is point ({0}, {1}) inside slot {2}",
+            "description": "Check if a point in world coordinates is inside a slot's attachment polygon",
+            "params": {
+              "x": {
+                "name": "X",
+                "desc": "X world coordinate"
+              },
+              "y": {
+                "name": "Y",
+                "desc": "Y world coordinate"
+              },
+              "slot-name": {
+                "name": "Slot name",
+                "desc": "Name of the slot to check"
+              }
+            }
           }
         },
         "actions": {
@@ -404,6 +427,109 @@
                 "desc": "Name of the slot to reset. Leave empty to reset all slots."
               }
             }
+          },
+          "update-bone-pose": {
+            "list-name": "Update bone pose",
+            "display-text": "Set bone {2} position to ({0}, {1})",
+            "description": "Update the pose position of a bone to specific world coordinates.",
+            "params": {
+              "x": {
+                "name": "X",
+                "desc": "X world coordinate"
+              },
+              "y": {
+                "name": "Y",
+                "desc": "Y world coordinate"
+              },
+              "bone-name": {
+                "name": "Bone name",
+                "desc": "Name of the bone to update"
+              }
+            }
+          },
+          "attach-instance-to-bone": {
+            "list-name": "Attach instance to bone",
+            "display-text": "Attach instance UID {0} to bone {1} with offset ({2}, {3}, {4}°)",
+            "description": "Make an object instance follow a skeleton bone's position and rotation. The instance will automatically update its position and angle to match the bone every frame. Offsets are applied in the bone's local space (rotated with the bone).",
+            "params": {
+              "uid": {
+                "name": "UID",
+                "desc": "The UID of the object instance to attach (use expression like Sprite.UID)"
+              },
+              "bone-name": {
+                "name": "Bone name",
+                "desc": "Name of the bone to follow"
+              },
+              "offset-x": {
+                "name": "Offset X",
+                "desc": "X offset from bone position (in bone's local space)"
+              },
+              "offset-y": {
+                "name": "Offset Y",
+                "desc": "Y offset from bone position (in bone's local space)"
+              },
+              "offset-angle": {
+                "name": "Offset angle",
+                "desc": "Angle offset in degrees from bone rotation"
+              }
+            }
+          },
+          "detach-instance-from-bone": {
+            "list-name": "Detach instance from bone",
+            "display-text": "Detach instance from bone {0}",
+            "description": "Stop an object instance from following a bone. The instance will remain at its current position.",
+            "params": {
+              "bone-name": {
+                "name": "Bone name",
+                "desc": "Name of the bone to detach from"
+              }
+            }
+          },
+          "add-handle": {
+            "list-name": "Add handle",
+            "display-text": "Add interactive handle for {0} {1} with radius {2} (debug: {3})",
+            "description": "Add an interactive handle to a bone or slot that can be dragged with the mouse. The radius determines the clickable area.",
+            "params": {
+              "type": {
+                "name": "Type",
+                "desc": "Type of handle to add",
+                "items": {
+                  "bone": "Bone (drags bone position)",
+                  "slot": "Slot (drags slot attachment position)"
+                }
+              },
+              "name": {
+                "name": "Name",
+                "desc": "Name of the bone or slot to add handle to"
+              },
+              "radius": {
+                "name": "Radius",
+                "desc": "Radius of the clickable area in pixels"
+              },
+              "debug": {
+                "name": "Debug",
+                "desc": "Whether to show debug visualization for the handle"
+              }
+            }
+          },
+          "remove-handle": {
+            "list-name": "Remove handle",
+            "display-text": "Remove handle from {0} {1}",
+            "description": "Remove an interactive handle from a bone or slot.",
+            "params": {
+              "type": {
+                "name": "Type",
+                "desc": "Type of handle to remove",
+                "items": {
+                  "bone": "Bone",
+                  "slot": "Slot"
+                }
+              },
+              "name": {
+                "name": "Name",
+                "desc": "Name of the bone or slot to remove handle from"
+              }
+            }
           }
         },
         "expressions": {
@@ -450,6 +576,26 @@
           "bone-rotation": {
             "description": "Get the world rotation of a bone.",
             "translated-name": "BoneRotation",
+            "params": {
+              "bone-name": {
+                "name": "Bone name",
+                "desc": "Name of the bone"
+              }
+            }
+          },
+          "bone-world-x": {
+            "description": "Get the C3 world X position of a bone.",
+            "translated-name": "BoneWorldX",
+            "params": {
+              "bone-name": {
+                "name": "Bone name",
+                "desc": "Name of the bone"
+              }
+            }
+          },
+          "bone-world-y": {
+            "description": "Get the C3 world Y position of a bone.",
+            "translated-name": "BoneWorldY",
             "params": {
               "bone-name": {
                 "name": "Bone name",
