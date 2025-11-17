@@ -1229,7 +1229,11 @@ void SpineSprite::draw() {
 	Vector<String> hover_text_lines;
 	if (hovered_slot) {
 		String name;
+#if (VERSION_MAJOR >= 4 && VERSION_MINOR >= 5)
+		name = String::utf8(hovered_slot->getData().getName().buffer());
+#else
 		name.parse_utf8(hovered_slot->getData().getName().buffer());
+#endif
 		hover_text_lines.push_back(String("Slot: ") + name);
 	}
 
@@ -1239,7 +1243,11 @@ void SpineSprite::draw() {
 		draw_bone(hovered_bone, Color(debug_bones_color.r, debug_bones_color.g, debug_bones_color.b, 1));
 		debug_bones_thickness = thickness;
 		String name;
+#if (VERSION_MAJOR >= 4 && VERSION_MINOR >= 5)
+		name = String::utf8(hovered_bone->getData().getName().buffer());
+#else
 		name.parse_utf8(hovered_bone->getData().getName().buffer());
+#endif
 		hover_text_lines.push_back(String("Bone: ") + name);
 	}
 
