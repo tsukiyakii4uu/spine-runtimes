@@ -313,7 +313,16 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 	}
 
 	private updateHandles (skeleton: Skeleton) {
-		const mouse = this.runtime.mouse;
+		if (this.dragHandles.size === 0) return;
+
+		// accessing mouse without having a mouse object will throw an error
+		let mouse: IMouseObjectType;
+		try {
+			mouse = this.runtime.mouse;
+		} catch (_) {
+			return;
+		}
+
 		const isLeftClickDown = mouse.isMouseButtonDown(0);
 		if (this.dragHandles.size <= 0) {
 			this.prevLeftClickDown = isLeftClickDown;
