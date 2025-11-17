@@ -52,7 +52,11 @@
 #ifdef SPINE_GODOT_EXTENSION
 #include <godot_cpp/classes/editor_file_system.hpp>
 #else
+#if (VERSION_MAJOR >= 4 && VERSION_MINOR >= 5)
+#include "editor/file_system/editor_file_system.h"
+#else
 #include "editor/editor_file_system.h"
+#endif
 #endif
 #endif
 
@@ -339,7 +343,7 @@ void SpineSkeletonDataResource::load_resources(spine::Atlas *atlas,
 	spine::SkeletonData *data;
 	if (!EMPTY(json)) {
 		spine::SkeletonJson skeletonJson(atlas);
-		data = skeletonJson.readSkeletonData(json.utf8());
+		data = skeletonJson.readSkeletonData(json.utf8().ptr());
 		if (!data) {
 			ERR_PRINT(String("Error while loading skeleton data: ") + get_path());
 			ERR_PRINT(String("Error message: ") + skeletonJson.getError().buffer());

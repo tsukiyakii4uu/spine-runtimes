@@ -300,7 +300,8 @@ Error SpineAtlasResource::load_from_atlas_file_internal(const String &path, bool
 	clear();
 	texture_loader = new GodotSpineTextureLoader(&textures, &normal_maps, &specular_maps, normal_map_prefix, specular_map_prefix, is_importing);
 	auto atlas_utf8 = atlas_data.utf8();
-	atlas = new spine::Atlas(atlas_utf8, atlas_utf8.length(), source_path.get_base_dir().utf8(), texture_loader);
+	auto dir_utf8 = source_path.get_base_dir().utf8();
+	atlas = new spine::Atlas(atlas_utf8.ptr(), atlas_utf8.length(), dir_utf8.ptr(), texture_loader);
 	if (atlas) return OK;
 
 	clear();
@@ -343,7 +344,8 @@ Error SpineAtlasResource::load_from_file(const String &path) {
 	clear();
 	texture_loader = new GodotSpineTextureLoader(&textures, &normal_maps, &specular_maps, normal_map_prefix, specular_map_prefix, false);
 	auto utf8 = atlas_data.utf8();
-	atlas = new spine::Atlas(utf8.ptr(), utf8.size(), source_path.get_base_dir().utf8(), texture_loader);
+	auto dir_utf8 = source_path.get_base_dir().utf8();
+	atlas = new spine::Atlas(utf8.ptr(), utf8.size(), dir_utf8.ptr(), texture_loader);
 	if (atlas) return OK;
 
 	clear();

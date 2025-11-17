@@ -27,8 +27,6 @@
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
-#define VERSION_MAJOR 4
-
 #ifdef TOOLS_ENABLED
 #include "SpineEditorPlugin.h"
 #include "SpineAtlasResource.h"

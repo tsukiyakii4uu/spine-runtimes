@@ -84,7 +84,7 @@ String SpineEventData::get_string_value() {
 
 void SpineEventData::set_string_value(const String &v) {
 	SPINE_CHECK(get_spine_object(), )
-	get_spine_object()->setStringValue(spine::String(v.utf8()));
+	get_spine_object()->setStringValue(spine::String(v.utf8().ptr()));
 }
 
 String SpineEventData::get_audio_path() {
@@ -94,7 +94,7 @@ String SpineEventData::get_audio_path() {
 
 void SpineEventData::set_audio_path(const String &v) {
 	SPINE_CHECK(get_spine_object(), )
-	get_spine_object()->setAudioPath(spine::String(v.utf8()));
+	get_spine_object()->setAudioPath(spine::String(v.utf8().ptr()));
 }
 
 float SpineEventData::get_volume() {
