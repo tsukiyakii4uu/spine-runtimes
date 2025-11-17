@@ -23,7 +23,7 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 	skins: string[] = [];
 	animation?: string;
 
-	_inst!: SDK.IWorldInstance & { errors: Record<string, string> };
+	_inst!: SDK.IWorldInstance & { errors: SpineC3EditorError };
 
 	private assetLoader: AssetLoader;
 	private skeletonRenderer: SkeletonRendererCore;
@@ -45,7 +45,7 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 	private tempColors = new Float32Array(4096);
 
 	// errors
-	private errors: Record<string, string> = {};
+	private errors: SpineC3EditorError = {};
 
 	constructor (sdkType: SDK.ITypeBase, inst: SDK.IWorldInstance) {
 		super(sdkType, inst);
@@ -415,13 +415,14 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		skeleton.updateWorldTransform(spine.Physics.update);
 	}
 
-	private setError (key: string, condition: boolean, message: string) {
+	private setError (key: SpineC3EditorErrorType, condition: boolean, message: string) {
 		if (condition) {
 			this.errors[key] = message;
 			return;
 		}
 		delete this.errors[key];
 	}
+
 	private hasErrors () {
 		const { errors, skins, animation, spineBounds } = this;
 
@@ -479,6 +480,9 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		return false;
 	}
 };
+
+type SpineC3EditorErrorType = "boundsAnimationSkinType" | "nonExistingAnimation" | "boundsNoDimension";
+type SpineC3EditorError = Partial<Record<SpineC3EditorErrorType, string>>;
 
 PLUGIN_CLASS.Instance = SpineC3PluginInstance;
 
