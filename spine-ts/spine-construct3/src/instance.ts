@@ -125,8 +125,14 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 			while (command) {
 				const { numVertices, positions, uvs, colors, indices, numIndices, blendMode } = command;
 
-				const vertices = this.tempVertices;
-				const c3colors = this.tempColors;
+				const vertices = this.tempVertices.length < numVertices * 3
+					? (this.tempVertices = new Float32Array(numVertices * 3))
+					: this.tempVertices;
+
+				const c3colors = this.tempColors.length < numVertices * 4
+					? (this.tempColors = new Float32Array(numVertices * 4))
+					: this.tempColors;
+
 				for (let i = 0; i < numVertices; i++) {
 					const srcIndex = i * 2;
 					const dstIndex = i * 3;
