@@ -15,15 +15,14 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 	private layoutView?: SDK.UI.ILayoutView;
 	private renderer?: SDK.Gfx.IWebGLRenderer;
 
-	private currentAtlasFileSID = -1;
+	private textureAtlasSID = -1;
 	private textureAtlas?: TextureAtlas;
+	private textureAtlasBasePath?: string;
 
 	skeleton?: Skeleton;
 	state?: AnimationState;
 	skins: string[] = [];
 	animation?: string;
-
-	_inst!: SDK.IWorldInstance & { errors: SpineC3EditorError };
 
 	private assetLoader: AssetLoader;
 	private skeletonRenderer: SkeletonRendererCore;
@@ -45,7 +44,9 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 	private tempColors = new Float32Array(4096);
 
 	// errors
-	private errors: SpineC3EditorError = {};
+	private errorTextureAtlas?: string;
+	private errorSkeleton?: string;
+	private errorTextC3?: SDK.Gfx.IWebGLText;
 
 	constructor (sdkType: SDK.ITypeBase, inst: SDK.IWorldInstance) {
 		super(sdkType, inst);
@@ -55,8 +56,6 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 
 		this.assetLoader = new spine.AssetLoader();
 		this.skeletonRenderer = new spine.SkeletonRendererCore();
-
-		this._inst.errors = this.errors;
 	}
 
 	Release () {
@@ -77,42 +76,43 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		this.loadAtlas();
 		this.loadSkeleton();
 
-		const hasErrors = this.hasErrors();
-		if (this.skeleton && !hasErrors) {
+		const { _inst, skeleton } = this;
+		const errorsString = this.getErrorsString();
+		if (skeleton && this.textureAtlas && !errorsString) {
 			this.setAnimation();
 			this.setSkin();
 
-			const rectX = this._inst.GetX();
-			const rectY = this._inst.GetY();
-			const rectAngle = this._inst.GetAngle();
-			let offsetX = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_X) as number;
-			let offsetY = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_Y) as number;
-			let offsetAngle = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_ANGLE) as number;
+			const rectX = _inst.GetX();
+			const rectY = _inst.GetY();
+			const rectAngle = _inst.GetAngle();
+			let offsetX = _inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_X) as number;
+			let offsetY = _inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_Y) as number;
+			let offsetAngle = _inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_ANGLE) as number;
 
 			if (!this.positioningBounds) {
 				offsetX += rectX;
 				offsetY += rectY;
 				offsetAngle += rectAngle;
 
-				const baseScaleX = this._inst.GetWidth() / this.spineBounds.width;
-				const baseScaleY = this._inst.GetHeight() / this.spineBounds.height;
-				this.skeleton.scaleX = baseScaleX;
-				this.skeleton.scaleY = baseScaleY;
-				this._inst.SetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_X, baseScaleX);
-				this._inst.SetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_Y, baseScaleY);
+				const baseScaleX = _inst.GetWidth() / this.spineBounds.width;
+				const baseScaleY = _inst.GetHeight() / this.spineBounds.height;
+				skeleton.scaleX = baseScaleX;
+				skeleton.scaleY = baseScaleY;
+				_inst.SetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_X, baseScaleX);
+				_inst.SetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_Y, baseScaleY);
 			} else {
 				offsetX += this.positionModePrevX;
 				offsetY += this.positionModePrevY;
 				offsetAngle += this.positionModePrevAngle;
-				this._inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_X, offsetX - rectX);
-				this._inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_Y, offsetY - rectY);
-				this._inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_ANGLE, offsetAngle - rectAngle);
+				_inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_X, offsetX - rectX);
+				_inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_Y, offsetY - rectY);
+				_inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_ANGLE, offsetAngle - rectAngle);
 				this.positionModePrevX = rectX;
 				this.positionModePrevY = rectY;
 				this.positionModePrevAngle = rectAngle;
 
-				this.skeleton.scaleX = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_X) as number;
-				this.skeleton.scaleY = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_Y) as number;
+				skeleton.scaleX = _inst.GetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_X) as number;
+				skeleton.scaleY = _inst.GetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_Y) as number;
 			}
 
 
@@ -121,7 +121,7 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 			const inv255 = 1 / 255;
 
 			this.update(0);
-			let command = this.skeletonRenderer.render(this.skeleton);
+			let command = this.skeletonRenderer.render(skeleton);
 			while (command) {
 				const { numVertices, positions, uvs, colors, indices, numIndices, blendMode } = command;
 
@@ -163,39 +163,35 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 			iRenderer.SetAlphaBlend();
 			iRenderer.SetColorFillMode();
 			iRenderer.SetColorRgba(0.25, 0, 0, 0.25);
-			iRenderer.LineQuad(this._inst.GetQuad());
+			iRenderer.LineQuad(_inst.GetQuad());
 			iRenderer.Line(rectX, rectY, offsetX, offsetY);
 
-			// if (this.hasErrors()) {
-			// 	iRenderer.SetColorFillMode();
-			// 	iRenderer.SetColorRgba(1, 0, 0, .5);
-			// 	iRenderer.Quad(this._inst.GetQuad());
-			// }
 		} else {
+			iRenderer.SetAlphaBlend();
 
-			const sdkType = this._sdkType as SpineC3PluginType;
-
-			const logo = sdkType.getSpineLogo(iRenderer);
+			const logo = (this._sdkType as SpineC3PluginType).getSpineLogo(iRenderer);
 			if (logo) {
-				iRenderer.ResetColor();
-				iRenderer.SetAlphaBlend();
+				iRenderer.SetColorRgba(1, 1, 1, errorsString ? 0.25 : 1);
 				iRenderer.SetTexture(logo);
-				if (hasErrors) {
-					iRenderer.SetColorRgba(1, 0, 0, 1);
-				}
-				iRenderer.Quad(this._inst.GetQuad());
 			} else {
-				iRenderer.SetAlphaBlend();
 				iRenderer.SetColorFillMode();
-
-				if (this.HadTextureError())
-					iRenderer.SetColorRgba(0.25, 0, 0, 0.25);
-				else
-					iRenderer.SetColorRgba(0, 0, 0.1, 0.1);
-
-				iRenderer.Quad(this._inst.GetQuad());
+				iRenderer.SetColorRgba(0.25, 0, 0, 0.25);
 			}
+			const quad = _inst.GetQuad();
+			iRenderer.Quad(quad);
 
+			if (errorsString) {
+				const webglText = this.getErrorTextC3(iRenderer, this.layoutView);
+				webglText.SetSize(_inst.GetWidth(), _inst.GetHeight(), this.layoutView.GetZoomFactor());
+				webglText.SetText(errorsString);
+
+				const texture = webglText.GetTexture();
+				if (!texture) return;
+
+				iRenderer.SetColorRgba(1, 1, 1, 1);
+				iRenderer.SetTexture(texture);
+				iRenderer.Quad3(quad, webglText.GetTexRect());
+			}
 
 		}
 	}
@@ -204,16 +200,21 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		console.log(`Prop change - Name: ${id} - Value: ${value}`);
 
 		if (id === PLUGIN_CLASS.PROP_ATLAS) {
+			this.textureAtlasSID = -1;
 			this.textureAtlas?.dispose();
 			this.textureAtlas = undefined;
 			this.skins = [];
+			this.skeleton = undefined;
+			this.resetBounds();
 			this.layoutView?.Refresh();
 			return;
 		}
 
 		if (id === PLUGIN_CLASS.PROP_SKELETON) {
+			this.errorSkeleton = undefined;
 			this.skeleton = undefined;
 			this.skins = [];
+			this.resetBounds();
 			this.layoutView?.Refresh();
 			return;
 		}
@@ -304,6 +305,27 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		this.update(0);
 	}
 
+	private async loadAtlas () {
+		if (!this.renderer) return;
+		this.checkAtlasTexturesValidity();
+
+		const propValue = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_ATLAS) as number;
+		if (this.textureAtlasSID === propValue && !this.errorTextureAtlas) return;
+		this.textureAtlasSID = propValue;
+
+		const result = await this.assetLoader.loadAtlasEditor(propValue, this._inst, this.renderer)
+			.catch((error: Error) => {
+				this.errorTextureAtlas = error.message;
+				this.layoutView?.Refresh();
+			});
+		if (!result) return;
+
+		this.errorTextureAtlas = undefined;
+		this.textureAtlas = result.textureAtlas;
+		this.textureAtlasBasePath = result.basePath;
+		this.layoutView?.Refresh();
+	}
+
 	private async loadSkeleton () {
 		if (!this.renderer || !this.textureAtlas) return;
 		if (this.skeleton) return;
@@ -314,38 +336,25 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		const loaderScale = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_LOADER_SCALE) as number;
 		const skeletonData = await this.assetLoader.loadSkeletonEditor(propValue, this.textureAtlas, loaderScale, this._inst)
 			.catch((error) => {
-				console.log("ATLAS AND SKELETON NOT CORRESPONDING", error);
+				if (!this.errorSkeleton) this.layoutView?.Refresh();
+				this.errorSkeleton = `${error.message}\n. Likely Atlas and Skeleton are not corresponding.`;
 			});
 		if (!skeletonData) return;
 
+		this.errorSkeleton = undefined;
 		this.skeleton = new spine.Skeleton(skeletonData);
 		const animationStateData = new spine.AnimationStateData(skeletonData);
 		this.state = new spine.AnimationState(animationStateData);
 
 		this.setSkin();
 		this.update(0);
+
+		console.log(this.skeleton, this.textureAtlas);
 		this.setBoundsFromBoundsProvider();
 		this.initBounds();
 
 		this.layoutView?.Refresh();
 		console.log("SKELETON LOADED");
-	}
-
-	private async loadAtlas () {
-		if (!this.renderer) return;
-
-		const propValue = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_ATLAS) as number;
-
-		if (this.currentAtlasFileSID === propValue) return;
-		this.currentAtlasFileSID = propValue;
-
-		console.log("Loading atlas");
-
-		const textureAtlas = await this.assetLoader.loadAtlasEditor(propValue, this._inst, this.renderer);
-		if (!textureAtlas) return;
-
-		this.textureAtlas = textureAtlas;
-		this.layoutView?.Refresh();
 	}
 
 	private setBoundsFromBoundsProvider () {
@@ -371,11 +380,20 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 	}
 
 	private resetBounds () {
+		if (!this.skeleton || !this.textureAtlas) {
+			this._inst.SetSize(200, 200);
+			this._inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_X, 0);
+			this._inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_Y, 0);
+			this._inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_ANGLE, 0);
+			this._inst.SetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_X, 1);
+			this._inst.SetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_Y, 1);
+			return;
+		}
+
 		this.setBoundsFromBoundsProvider();
+		if (this.getErrorsString()) return;
 
-		if (this.hasErrors()) return;
 		const { x, y, width, height } = this.spineBounds;
-
 		this._inst.SetOrigin(-x / width, -y / height);
 		this._inst.SetSize(width, height);
 
@@ -404,6 +422,55 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		this.resetBounds();
 	}
 
+	private checkAtlasTexturesValidity () {
+		const atlasSid = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_ATLAS) as number;
+		if (atlasSid === -1) return;
+
+		const { textureAtlas, textureAtlasBasePath } = this;
+		if (!textureAtlas || textureAtlasBasePath === undefined) return;
+
+		for (const page of textureAtlas.pages) {
+			if (!this._inst.GetProject().GetProjectFileByExportPath(textureAtlasBasePath + page.name)) {
+				this.skeleton = undefined;
+				this.OnPropertyChanged(PLUGIN_CLASS.PROP_ATLAS, atlasSid);
+				return;
+			}
+		}
+	}
+
+	private getErrorsString () {
+		const { skins, animation, spineBounds } = this;
+		const errors = [];
+
+		const boundsType = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_PROVIDER) as SpineBoundsProviderType;
+		if (boundsType === "animation-skin" && ((!skins || skins.length === 0) && !animation))
+			errors.push("Animation/Skin bounds provider requires one between skin and animation to be set.");
+
+		if (Boolean(!animation || this.skeleton?.data.findAnimation(animation)) === false)
+			errors.push("Not existing animation");
+
+		const { width, height } = spineBounds;
+		if (width <= 0 || height <= 0)
+			errors.push("A bounds cannot have negative dimensions. This might happen when the setup pose is empty. Try to set a skin and the Animation/Skin bounds provider.");
+
+		if (this.errorTextureAtlas) errors.push(this.errorTextureAtlas);
+		if (this.errorSkeleton) errors.push(this.errorSkeleton);
+
+		if (errors.length === 0) return "";
+
+		return errors.join("\n");
+	}
+	private getErrorTextC3 (iRenderer: SDK.Gfx.IWebGLRenderer, iLayoutView: SDK.UI.ILayoutView) {
+		if (this.errorTextC3) return this.errorTextC3;
+
+		const errorTextC3 = iRenderer.CreateRendererText()
+		this.errorTextC3 = errorTextC3;
+		this.errorTextC3.SetFontSize(12);
+		this.errorTextC3.SetColorRgb(1, 0, 0);
+		this.errorTextC3.SetTextureUpdateCallback(() => iLayoutView.Refresh());
+		return this.errorTextC3;
+	}
+
 	private update (delta: number) {
 		const { state, skeleton } = this;
 
@@ -413,40 +480,6 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		skeleton.update(delta);
 		state.apply(skeleton);
 		skeleton.updateWorldTransform(spine.Physics.update);
-	}
-
-	private setError (key: SpineC3EditorErrorType, condition: boolean, message: string) {
-		if (condition) {
-			this.errors[key] = message;
-			return;
-		}
-		delete this.errors[key];
-	}
-
-	private hasErrors () {
-		const { errors, skins, animation, spineBounds } = this;
-
-		const boundsType = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_PROVIDER) as SpineBoundsProviderType;
-		this.setError(
-			"boundsAnimationSkinType",
-			boundsType === "animation-skin" && ((!skins || skins.length === 0) && !animation),
-			"Animation/Skin bounds provider requires one between skin and animation to be set."
-		);
-
-		this.setError(
-			"nonExistingAnimation",
-			Boolean(!animation || this.skeleton?.data.findAnimation(animation)) === false,
-			"Not existing animation"
-		);
-
-		const { width, height } = spineBounds;
-		this.setError(
-			"boundsNoDimension",
-			width <= 0 || height <= 0,
-			"A bounds cannot have negative dimensions. This might happen when the setup pose is empty. Try to set a skin and the Animation/Skin bounds provider."
-		);
-
-		return Object.keys(errors).length > 0;
 	}
 
 	GetTexture () {
@@ -480,9 +513,6 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		return false;
 	}
 };
-
-type SpineC3EditorErrorType = "boundsAnimationSkinType" | "nonExistingAnimation" | "boundsNoDimension";
-type SpineC3EditorError = Partial<Record<SpineC3EditorErrorType, string>>;
 
 PLUGIN_CLASS.Instance = SpineC3PluginInstance;
 

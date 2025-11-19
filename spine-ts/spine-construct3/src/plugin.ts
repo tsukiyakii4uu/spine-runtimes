@@ -22,7 +22,6 @@ const PLUGIN_CLASS = class SpineC3Plugin extends SDK.IPluginBase {
 	static PROP_LOADER_SCALE = "spine-loader-scale";
 	static PROP_SKIN = "spine-skin";
 	static PROP_ANIMATION = "spine-animation";
-	static PROP_ERRORS = "spine-errors";
 	static PROP_RATIO_WIDTH = "spine-restore-ratio-width";
 	static PROP_RATIO_HEIGHT = "spine-restore-ratio-height";
 	static PROP_BOUNDS_PROVIDER_GROUP = "spine-bounds-provider-group";
@@ -73,14 +72,6 @@ const PLUGIN_CLASS = class SpineC3Plugin extends SDK.IPluginBase {
 			new SDK.PluginProperty("text", SpineC3Plugin.PROP_SKIN, ""),
 			new SDK.PluginProperty("text", SpineC3Plugin.PROP_ANIMATION, ""),
 			new SDK.PluginProperty("check", SpineC3Plugin.PROP_DEBUG_SKELETON, false),
-			new SDK.PluginProperty("info", SpineC3Plugin.PROP_ERRORS, {
-				infoCallback (inst) {
-					const errors = (inst.GetInstance() as unknown as { errors: Record<string, string> }).errors;
-					return Object.values(errors).reduce((acc, next) => {
-						return acc === "" ? next : `${acc}\n${next}`;
-					}, "");
-				},
-			}),
 
 			new SDK.PluginProperty("group", SpineC3Plugin.PROP_BOUNDS_PROVIDER_GROUP),
 			new SDK.PluginProperty("combo", SpineC3Plugin.PROP_BOUNDS_PROVIDER, {

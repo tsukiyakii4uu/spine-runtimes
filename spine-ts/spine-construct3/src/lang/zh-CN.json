@@ -30,10 +30,6 @@
             "name": "皮肤",
             "desc": "皮肤"
           },
-          "spine-errors": {
-            "name": "错误",
-            "desc": "错误"
-          },
           "spine-bounds-provider-group": {
             "name": "边界提供者",
             "desc": "选择所需的边界提供者并填写相应的属性。"

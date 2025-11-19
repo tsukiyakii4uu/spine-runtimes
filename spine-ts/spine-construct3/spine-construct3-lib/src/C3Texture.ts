@@ -31,7 +31,7 @@ import { BlendMode, Texture, type TextureAtlasPage, TextureFilter, TextureWrap }
 
 export class C3TextureEditor extends Texture {
 	texture: SDK.Gfx.IWebGLTexture;
-	renderer: SDK.Gfx.IWebGLRenderer;
+	renderer?: SDK.Gfx.IWebGLRenderer;
 
 	constructor (image: HTMLImageElement | ImageBitmap, renderer: SDK.Gfx.IWebGLRenderer, page: TextureAtlasPage) {
 		super(image);
@@ -56,7 +56,8 @@ export class C3TextureEditor extends Texture {
 
 
 	dispose () {
-		this.renderer.DeleteTexture(this.texture);
+		this.renderer?.DeleteTexture(this.texture);
+		this.renderer = undefined;
 	}
 }
 

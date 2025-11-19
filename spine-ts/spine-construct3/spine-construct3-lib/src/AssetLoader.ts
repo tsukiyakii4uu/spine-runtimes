@@ -56,7 +56,7 @@ export class AssetLoader {
 
 	public async loadAtlasEditor (sid: number, instance: SDK.IWorldInstance, renderer: SDK.Gfx.IWebGLRenderer) {
 		const projectFile = instance.GetProject().GetProjectFileBySID(sid);
-		if (!projectFile) return null;
+		if (!projectFile) throw new Error(`Atlas file not found wit the given SID: ${sid}`);
 
 		const blob = projectFile.GetBlob();
 		const content = await blob.text();
@@ -73,7 +73,7 @@ export class AssetLoader {
 			return texture;
 		}));
 
-		return textureAtlas;
+		return { basePath, textureAtlas };
 	}
 
 	public async loadSpineTextureEditor (pageName: string, pma = false, instance: SDK.IWorldInstance) {

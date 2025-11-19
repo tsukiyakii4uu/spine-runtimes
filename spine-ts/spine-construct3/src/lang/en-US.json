@@ -30,10 +30,6 @@
             "name": "skin",
             "desc": "skin"
           },
-          "spine-errors": {
-            "name": "Errors",
-            "desc": "errors"
-          },
           "spine-bounds-provider-group": {
             "name": "Bounds provider",
             "desc": "Select the desired buound provider and fill the respective properties."
