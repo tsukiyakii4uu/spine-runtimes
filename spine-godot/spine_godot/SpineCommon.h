@@ -30,7 +30,6 @@
 #ifndef SPINE_COMMON_H
 #define SPINE_COMMON_H
 
-#include "core/version_generated.gen.h"
 #ifdef SPINE_GODOT_EXTENSION
 #include <godot_cpp/core/version.hpp>
 
