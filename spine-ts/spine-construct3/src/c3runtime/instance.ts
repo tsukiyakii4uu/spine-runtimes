@@ -249,6 +249,13 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 			renderer.setColor([0, 1, 0, 1]);
 			renderer.convexPoly(this.circle(x1, y1, 2));
 		}
+
+		// debug bounds
+		renderer.setAlphaBlendMode();
+		renderer.setColorFillMode();
+		renderer.setColorRgba(0.25, 0, 0, 0.25);
+		renderer.lineQuad(this.getBoundingQuad(false));
+		renderer.line(this.x, this.y, this.x + this.propOffsetX, this.y + this.propOffsetY);
 	}
 
 	private circle (x: number, y: number, radius: number) {
