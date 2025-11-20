@@ -32,11 +32,12 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 	private positionModePrevX = 0;
 	private positionModePrevY = 0;
 	private positionModePrevAngle = 0;
+	private spineBoundsInit = false;
 	private spineBounds = {
 		x: 0,
 		y: 0,
-		width: 100,
-		height: 100,
+		width: 200,
+		height: 200,
 	};
 
 	// utils for drawing
@@ -59,6 +60,7 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 	}
 
 	Release () {
+		this.textureAtlas?.dispose();
 	}
 
 	OnCreate () {
@@ -75,6 +77,7 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 
 		this.loadAtlas();
 		this.loadSkeleton();
+		this.initBounds();
 
 		const { _inst, skeleton } = this;
 		const errorsString = this.getErrorsString();
@@ -203,14 +206,13 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 	}
 
 	async OnPropertyChanged (id: string, value: EditorPropertyValueType) {
-		console.log(`Prop change - Name: ${id} - Value: ${value}`);
-
 		if (id === PLUGIN_CLASS.PROP_ATLAS) {
 			this.textureAtlasSID = -1;
 			this.textureAtlas?.dispose();
 			this.textureAtlas = undefined;
 			this.skins = [];
 			this.skeleton = undefined;
+			this.spineBoundsInit = false;
 			this.resetBounds();
 			this.layoutView?.Refresh();
 			return;
@@ -220,6 +222,7 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 			this.errorSkeleton = undefined;
 			this.skeleton = undefined;
 			this.skins = [];
+			this.spineBoundsInit = false;
 			this.resetBounds();
 			this.layoutView?.Refresh();
 			return;
@@ -266,12 +269,11 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 			this.positioningBounds = value;
 			return
 		}
-
-		console.log("Prop change end");
 	}
 
 	private setAnimation () {
-		this.animation = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_ANIMATION) as string;
+		const propValue = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_ANIMATION) as string;
+		this.animation = propValue === "" ? undefined : propValue;
 	}
 
 	private setSkin () {
@@ -288,19 +290,13 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		} else if (skins.length === 1) {
 			const skinName = skins[0];
 			const skin = skeleton.data.findSkin(skinName);
-			if (!skin) {
-				// TODO: signal error
-				return;
-			}
+			if (!skin) return;
 			skeleton.setSkin(skins[0]);
 		} else {
 			const customSkin = new spine.Skin(propValue);
 			for (const s of skins) {
 				const skin = skeleton.data.findSkin(s)
-				if (!skin) {
-					// TODO: signal error
-					return;
-				}
+				if (!skin) return;
 				customSkin.addSkin(skin);
 			}
 			skeleton.setSkin(customSkin);
@@ -335,8 +331,6 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		if (!this.renderer || !this.textureAtlas) return;
 		if (this.skeleton) return;
 
-		console.log("Loading skeleton");
-
 		const propValue = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_SKELETON) as number;
 		const loaderScale = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_LOADER_SCALE) as number;
 		const skeletonData = await this.assetLoader.loadSkeletonEditor(propValue, this.textureAtlas, loaderScale, this._inst)
@@ -355,11 +349,7 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		this.setAnimation();
 		this.update(0);
 
-		this.setBoundsFromBoundsProvider();
-		this.initBounds();
-
 		this.layoutView?.Refresh();
-		console.log("SKELETON LOADED");
 	}
 
 	private setBoundsFromBoundsProvider () {
@@ -387,6 +377,8 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 	public resetBounds (keepScale = false) {
 		if (!this.skeleton || !this.textureAtlas) {
 			this._inst.SetSize(200, 200);
+			this.spineBounds.width = 200;
+			this.spineBounds.height = 200;
 			this._inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_X, 0);
 			this._inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_Y, 0);
 			this._inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_ANGLE, 0);
@@ -396,7 +388,12 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		}
 
 		this.setBoundsFromBoundsProvider();
-		if (this.getErrorsString()) return;
+		if (this.getErrorsString()) {
+			this.spineBoundsInit = false;
+			return;
+		};
+
+		this.spineBoundsInit = true;
 
 		const { x, y, width, height } = this.spineBounds;
 		this._inst.SetOrigin(-x / width, -y / height);
@@ -416,6 +413,8 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 	}
 
 	private initBounds () {
+		if (this.spineBoundsInit) return;
+
 		const offsetX = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_X) as number;
 		const offsetY = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_Y) as number;
 		const offsetAngle = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_ANGLE) as number;
@@ -425,13 +424,16 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		const scaleY = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_Y) as number;
 		const scaledBounds = scaleX !== 1 || scaleY !== 1;
 
-		if (shiftedBounds || scaledBounds) {
-			this.spineBounds.width = this._inst.GetWidth() / scaleX;
-			this.spineBounds.height = this._inst.GetHeight() / scaleY;
+		if (!shiftedBounds && !scaledBounds) {
+			this.resetBounds();
 			return;
 		}
 
-		this.resetBounds();
+		this.setBoundsFromBoundsProvider();
+		this.spineBounds.width = this._inst.GetWidth() / scaleX;
+		this.spineBounds.height = this._inst.GetHeight() / scaleY;
+
+		this.spineBoundsInit = true;
 	}
 
 	private checkAtlasTexturesValidity () {
@@ -451,15 +453,21 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 	}
 
 	private getErrorsString () {
-		const { skins, animation, spineBounds } = this;
+		const { skins, animation, spineBounds, skeleton } = this;
 		const errors = [];
 
 		const boundsType = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_PROVIDER) as SpineBoundsProviderType;
-		if (boundsType === "animation-skin" && ((!skins || skins.length === 0) && !animation))
+		if (boundsType === "animation-skin" && (skins.length === 0 && !animation))
 			errors.push("Animation/Skin bounds provider requires one between skin and animation to be set.");
 
-		if (Boolean(!animation || this.skeleton?.data.findAnimation(animation)) === false)
+		if (Boolean(!animation || skeleton?.data.findAnimation(animation)) === false)
 			errors.push("Not existing animation");
+
+		if (skins.length > 0) {
+			const missingSkins = skins.filter(skin => !skeleton?.data.findSkin(skin)).join(", ");
+			if (missingSkins)
+				errors.push("Not existing skin(s): ", missingSkins);
+		}
 
 		const { width, height } = spineBounds;
 		if (width <= 0 || height <= 0)
