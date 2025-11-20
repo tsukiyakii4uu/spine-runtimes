@@ -69,6 +69,11 @@
           "spine-bounds-offset-angle": {
             "name": "Offset Angle",
             "desc": "Offset Angle"
+          },
+          "set-bounds": {
+            "name": "Reset bounds",
+            "desc": "Click to reset the bounds using the current configuration, but keeping the current scale.",
+            "link-text": "Reset"
           }
         },
         "aceCategories": {

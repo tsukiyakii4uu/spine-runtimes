@@ -69,6 +69,11 @@
           "spine-bounds-offset-angle": {
             "name": "偏移角度",
             "desc": "偏移角度"
+          },
+          "set-bounds": {
+            "name": "重置边界",
+            "desc": "点击以使用当前配置重置边界，但保持当前缩放。",
+            "link-text": "重置"
           }
         },
         "aceCategories": {

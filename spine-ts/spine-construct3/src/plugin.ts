@@ -87,6 +87,13 @@ const PLUGIN_CLASS = class SpineC3Plugin extends SDK.IPluginBase {
 			new SDK.PluginProperty("float", SpineC3Plugin.PROP_BOUNDS_OFFSET_ANGLE, 0),
 			new SDK.PluginProperty("float", SpineC3Plugin.PROP_SKELETON_SCALE_X, 1),
 			new SDK.PluginProperty("float", SpineC3Plugin.PROP_SKELETON_SCALE_Y, 1),
+			new SDK.PluginProperty("link", "set-bounds", {
+				linkCallback: (instance) => {
+					const sdkInst = instance as SDKEditorInstanceClass;
+					sdkInst.resetBounds(true);
+				},
+				callbackType: "for-each-instance"
+			}),
 
 
 		]);

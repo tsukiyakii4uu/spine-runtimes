@@ -235,7 +235,6 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		if (id === PLUGIN_CLASS.PROP_SKIN) {
 			this.skins = [];
 			this.setSkin();
-			this.resetBounds();
 			this.layoutView?.Refresh();
 			return;
 		}
@@ -247,7 +246,7 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		}
 
 		if (id === PLUGIN_CLASS.PROP_BOUNDS_PROVIDER) {
-			this.resetBounds();
+			this.resetBounds(true);
 			this.layoutView?.Refresh();
 			return
 		}
@@ -353,9 +352,9 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		this.state = new spine.AnimationState(animationStateData);
 
 		this.setSkin();
+		this.setAnimation();
 		this.update(0);
 
-		console.log(this.skeleton, this.textureAtlas);
 		this.setBoundsFromBoundsProvider();
 		this.initBounds();
 
@@ -385,7 +384,7 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		return true;
 	}
 
-	private resetBounds () {
+	public resetBounds (keepScale = false) {
 		if (!this.skeleton || !this.textureAtlas) {
 			this._inst.SetSize(200, 200);
 			this._inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_X, 0);
@@ -401,7 +400,14 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 
 		const { x, y, width, height } = this.spineBounds;
 		this._inst.SetOrigin(-x / width, -y / height);
-		this._inst.SetSize(width, height);
+
+		let scaleX = 1;
+		let scaleY = 1;
+		if (keepScale) {
+			scaleX = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_X) as number;
+			scaleY = this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_Y) as number;
+		}
+		this._inst.SetSize(width * scaleX, height * scaleY);
 
 		this._inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_X, 0);
 		this._inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_Y, 0);
