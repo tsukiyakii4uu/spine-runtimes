@@ -495,10 +495,10 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 
 			this._setSkin();
 
-			this.update(0);
-
 			this.skeleton.scaleX = this.isFlippedX ? -this.propScaleX : this.propScaleX;
 			this.skeleton.scaleY = this.propScaleY;
+
+			this.update(0);
 
 			this.skeletonLoaded = true;
 			this._trigger(C3.Plugins.EsotericSoftware_SpineConstruct3.Cnds.OnSkeletonLoaded);
