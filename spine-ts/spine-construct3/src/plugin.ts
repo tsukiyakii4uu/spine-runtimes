@@ -1,4 +1,3 @@
-// biome-ignore lint/correctness/noUnusedImports: necessary to make C3 recognize the plugin
 import type { SDKEditorInstanceClass } from "./instance.ts";
 
 const SDK = globalThis.SDK;

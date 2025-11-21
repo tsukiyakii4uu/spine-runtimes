@@ -27,11 +27,20 @@
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
-import { AtlasAttachmentLoader, SkeletonBinary, SkeletonJson, TextureAtlas } from "@esotericsoftware/spine-core";
+import { AtlasAttachmentLoader, SkeletonBinary, type SkeletonData, SkeletonJson, TextureAtlas, TextureAtlasPage } from "@esotericsoftware/spine-core";
 import { C3Texture, C3TextureEditor } from "./C3Texture";
 
 
+interface CacheEntry<T> {
+	data: T;
+	refCount: number;
+}
+
 export class AssetLoader {
+
+	private static CacheSkeleton = new Map<string, CacheEntry<SkeletonData>>();
+	private static CacheAtlas = new Map<string, CacheEntry<TextureAtlas>>();
+	private static CacheTexture = new Map<string, CacheEntry<C3Texture>>();
 
 	public async loadSkeletonEditor (sid: number, textureAtlas: TextureAtlas, scale = 1, instance: SDK.IWorldInstance) {
 		const projectFile = instance.GetProject().GetProjectFileBySID(sid);
@@ -87,27 +96,43 @@ export class AssetLoader {
 	}
 
 	public async loadSkeletonRuntime (path: string, textureAtlas: TextureAtlas, scale = 1, instance: IRuntime) {
+		const cacheKey = `${path}|scale${scale}`;
+
+		const fileInCache = this.getFromCache(AssetLoader.CacheSkeleton, cacheKey);
+		if (fileInCache) return fileInCache;
+
 		const fullPath = await instance.assets.getProjectFileUrl(path);
 		if (!fullPath) return null;
 
 		const atlasLoader = new AtlasAttachmentLoader(textureAtlas);
 
+		let skeletonData: SkeletonData;
 		const isBinary = path.endsWith(".skel");
 		if (isBinary) {
 			const content = await instance.assets.fetchArrayBuffer(fullPath);
 			if (!content) return null;
 			const skeletonLoader = new SkeletonBinary(atlasLoader);
 			skeletonLoader.scale = scale;
-			return skeletonLoader.readSkeletonData(content);
+			skeletonData = skeletonLoader.readSkeletonData(content);
+		} else {
+			const content = await instance.assets.fetchJson(fullPath);
+			if (!content) return null;
+			const skeletonLoader = new SkeletonJson(atlasLoader);
+			skeletonLoader.scale = scale;
+			skeletonData = skeletonLoader.readSkeletonData(content);
 		}
-		const content = await instance.assets.fetchJson(fullPath);
-		if (!content) return null;
-		const skeletonLoader = new SkeletonJson(atlasLoader);
-		skeletonLoader.scale = scale;
-		return skeletonLoader.readSkeletonData(content);
+
+		AssetLoader.CacheSkeleton.set(cacheKey, { data: skeletonData, refCount: 1 });
+
+		return skeletonData;
 	}
 
 	public async loadAtlasRuntime (path: string, instance: IRuntime, renderer: IRenderer) {
+		const cacheKey = path;
+
+		const fileInCache = this.getFromCache(AssetLoader.CacheAtlas, cacheKey);
+		if (fileInCache) return fileInCache;
+
 		const fullPath = await instance.assets.getProjectFileUrl(path);
 		if (!fullPath) return null;
 
@@ -117,24 +142,77 @@ export class AssetLoader {
 		const basePath = path.substring(0, path.lastIndexOf("/") + 1);
 		const textureAtlas = new TextureAtlas(content);
 		await Promise.all(textureAtlas.pages.map(async page => {
-			const texture = await this.loadSpineTextureRuntime(basePath + page.name, page.pma, instance);
-			if (texture) {
-				const spineTexture = new C3Texture(texture, renderer, page);
-				page.setTexture(spineTexture);
-			}
+			const texture = await this.loadSpineTextureRuntime(basePath, page, instance, renderer);
+			if (texture) page.setTexture(texture);
 			return texture;
 		}));
+
+		AssetLoader.CacheAtlas.set(cacheKey, { data: textureAtlas, refCount: 1 });
+
 		return textureAtlas;
 	}
 
-	public async loadSpineTextureRuntime (pageName: string, pma = false, instance: IRuntime) {
-		const fullPath = await instance.assets.getProjectFileUrl(pageName);
+	public async loadSpineTextureRuntime (basePath: string, page: TextureAtlasPage, instance: IRuntime, renderer: IRenderer) {
+		const cacheKey = basePath + page.name;
+
+		const fileInCache = this.getFromCache(AssetLoader.CacheTexture, cacheKey);
+		if (fileInCache) return fileInCache;
+
+		const fullPath = await instance.assets.getProjectFileUrl(cacheKey);
 		if (!fullPath) return null;
 
 		const content = await instance.assets.fetchBlob(fullPath);
 		if (!content) return null;
 
-		return AssetLoader.createImageBitmapFromBlob(content, pma);
+		const image = await AssetLoader.createImageBitmapFromBlob(content, page.pma);
+		if (!image) return null;
+
+		const spineTexture = new C3Texture(image, renderer, page);
+
+		this.addToCache(AssetLoader.CacheTexture, cacheKey, spineTexture);
+
+		return spineTexture;
+	}
+
+	public releaseInstanceResources (skeletonPath: string, atlasPath: string, loaderScale: number) {
+		this.releaseResource(AssetLoader.CacheSkeleton, `${skeletonPath}|scale${loaderScale}`);
+
+		const atlasEntry = AssetLoader.CacheAtlas.get(atlasPath);
+		if (atlasEntry) {
+			this.releaseResource(AssetLoader.CacheAtlas, atlasPath, () => {
+				const basePath = atlasPath.substring(0, atlasPath.lastIndexOf("/") + 1);
+				for (const page of atlasEntry.data.pages) {
+					const textureKey = basePath + page.name;
+					this.releaseResource(AssetLoader.CacheTexture, textureKey, (texture) => {
+						texture.dispose();
+					});
+				}
+			});
+		}
+	}
+
+	private releaseResource<T> (cache: Map<string, CacheEntry<T>>, key: string, disposer?: (data: T) => void) {
+		const entry = cache.get(key);
+		if (!entry) return;
+
+		entry.refCount--;
+
+		if (entry.refCount <= 0) {
+			if (disposer) disposer(entry.data);
+			cache.delete(key);
+		}
+	}
+
+	private addToCache<T> (cache: Map<string, CacheEntry<T>>, cacheKey: string, data: T) {
+		cache.set(cacheKey, { data, refCount: 1 });
+	}
+
+	private getFromCache<T> (cache: Map<string, CacheEntry<T>>, cacheKey: string) {
+		const fileInCache = cache.get(cacheKey);
+		if (!fileInCache) return undefined;
+
+		fileInCache.refCount++;
+		return fileInCache.data;
 	}
 
 	static async createImageBitmapFromBlob (blob: Blob, pma: boolean): Promise<ImageBitmap | null> {

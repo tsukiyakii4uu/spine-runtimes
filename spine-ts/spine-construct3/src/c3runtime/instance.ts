@@ -451,6 +451,11 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 
 	_release () {
 		super._release();
+		this.assetLoader.releaseInstanceResources(this.propSkel, this.propAtlas, this.propLoaderScale);
+		this.textureAtlas = undefined;
+		this.renderer = undefined;
+		this.skeleton = undefined;
+		this.state = undefined;
 	}
 
 	/**********/

@@ -63,7 +63,7 @@ export class C3TextureEditor extends Texture {
 
 export class C3Texture extends Texture {
 	texture: ITexture;
-	renderer: IRenderer;
+	renderer?: IRenderer;
 
 	constructor (image: HTMLImageElement | ImageBitmap, renderer: IRenderer, page: TextureAtlasPage) {
 		super(image);
@@ -88,7 +88,8 @@ export class C3Texture extends Texture {
 	}
 
 	dispose () {
-		this.renderer.deleteTexture(this.texture);
+		this.renderer?.deleteTexture(this.texture);
+		this.renderer = undefined;
 	}
 }
 
