@@ -184,13 +184,14 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 				vertices[dstIndex + 1] = y;
 				vertices[dstIndex + 2] = 0;
 
-				// there's something wrong with the hand after adding the colors on spineboy portal animation
 				const color = colors[i];
 				const colorDst = i * 4;
-				c3colors[colorDst] = (color >>> 16 & 0xFF) * inv255;
-				c3colors[colorDst + 1] = (color >>> 8 & 0xFF) * inv255;
-				c3colors[colorDst + 2] = (color & 0xFF) * inv255;
-				c3colors[colorDst + 3] = (color >>> 24 & 0xFF) * inv255 * this.opacity;
+				const alpha = (color >>> 24 & 0xFF) * inv255 * this.opacity;
+				const alphaInverse = inv255 * alpha;
+				c3colors[colorDst] = (color >>> 16 & 0xFF) * alphaInverse;
+				c3colors[colorDst + 1] = (color >>> 8 & 0xFF) * alphaInverse;
+				c3colors[colorDst + 2] = (color & 0xFF) * alphaInverse;
+				c3colors[colorDst + 3] = alpha;
 			}
 
 			renderer.setTexture(command.texture.texture);

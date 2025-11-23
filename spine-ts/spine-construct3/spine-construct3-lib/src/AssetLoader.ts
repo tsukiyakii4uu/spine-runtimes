@@ -217,7 +217,6 @@ export class AssetLoader {
 
 	static async createImageBitmapFromBlob (blob: Blob, pma: boolean): Promise<ImageBitmap | null> {
 		try {
-			// pma parameters seems to do not matter here. It matters in C3 Texture creation
 			return createImageBitmap(blob, { premultiplyAlpha: pma ? "none" : "premultiply" });
 		} catch (e) {
 			console.error("Failed to create ImageBitmap from blob:", e);
