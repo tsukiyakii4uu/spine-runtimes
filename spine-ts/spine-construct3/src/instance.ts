@@ -118,7 +118,7 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 				skeleton.scaleY = _inst.GetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_Y) as number;
 			}
 
-
+			const opacity = _inst.GetOpacity();
 			const cos = Math.cos(offsetAngle);
 			const sin = Math.sin(offsetAngle);
 			const inv255 = 1 / 255;
@@ -147,10 +147,12 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 
 					const color = colors[i];
 					const colorDst = i * 4;
-					c3colors[colorDst] = (color >>> 16 & 0xFF) * inv255;
-					c3colors[colorDst + 1] = (color >>> 8 & 0xFF) * inv255;
-					c3colors[colorDst + 2] = (color & 0xFF) * inv255;
-					c3colors[colorDst + 3] = (color >>> 24 & 0xFF) * inv255;
+					const alpha = (color >>> 24 & 0xFF) * inv255 * opacity;
+					const alphaInverse = inv255 * alpha;
+					c3colors[colorDst] = (color >>> 16 & 0xFF) * alphaInverse;
+					c3colors[colorDst + 1] = (color >>> 8 & 0xFF) * alphaInverse;
+					c3colors[colorDst + 2] = (color & 0xFF) * alphaInverse;
+					c3colors[colorDst + 3] = alpha;
 				}
 
 				iRenderer.ResetColor();

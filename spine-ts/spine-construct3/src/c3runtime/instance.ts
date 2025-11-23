@@ -163,6 +163,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 
 	private renderSkeleton (renderer: IRenderer, skeleton: Skeleton) {
 		let command = this.skeletonRenderer.render(skeleton);
+		const opacity = this.opacity;
 		const inv255 = 1 / 255;
 		while (command) {
 			const { numVertices, positions, uvs, colors, indices, numIndices, blendMode } = command;
@@ -186,7 +187,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 
 				const color = colors[i];
 				const colorDst = i * 4;
-				const alpha = (color >>> 24 & 0xFF) * inv255 * this.opacity;
+				const alpha = (color >>> 24 & 0xFF) * inv255 * opacity;
 				const alphaInverse = inv255 * alpha;
 				c3colors[colorDst] = (color >>> 16 & 0xFF) * alphaInverse;
 				c3colors[colorDst + 1] = (color >>> 8 & 0xFF) * alphaInverse;
