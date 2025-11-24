@@ -28,7 +28,7 @@
  *****************************************************************************/
 
 import { AtlasAttachmentLoader, SkeletonBinary, type SkeletonData, SkeletonJson, TextureAtlas, TextureAtlasPage } from "@esotericsoftware/spine-core";
-import { C3Texture, C3TextureEditor } from "./C3Texture";
+import { C3TextureEditor, C3TextureRuntime } from "./C3Texture";
 
 
 interface CacheEntry<T> {
@@ -40,7 +40,7 @@ export class AssetLoader {
 
 	private static CacheSkeleton = new Map<string, CacheEntry<SkeletonData>>();
 	private static CacheAtlas = new Map<string, CacheEntry<TextureAtlas>>();
-	private static CacheTexture = new Map<string, CacheEntry<C3Texture>>();
+	private static CacheTexture = new Map<string, CacheEntry<C3TextureRuntime>>();
 
 	public async loadSkeletonEditor (sid: number, textureAtlas: TextureAtlas, scale = 1, instance: SDK.IWorldInstance) {
 		const projectFile = instance.GetProject().GetProjectFileBySID(sid);
@@ -167,7 +167,7 @@ export class AssetLoader {
 		const image = await AssetLoader.createImageBitmapFromBlob(content, page.pma);
 		if (!image) return null;
 
-		const spineTexture = new C3Texture(image, renderer, page);
+		const spineTexture = new C3TextureRuntime(image, renderer, page);
 
 		this.addToCache(AssetLoader.CacheTexture, cacheKey, spineTexture);
 

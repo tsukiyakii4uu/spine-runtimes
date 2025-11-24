@@ -1,0 +1,83 @@
+/******************************************************************************
+ * Spine Runtimes License Agreement
+ * Last updated April 5, 2025. Replaces all prior versions.
+ *
+ * Copyright (c) 2013-2025, Esoteric Software LLC
+ *
+ * Integration of the Spine Runtimes into software or otherwise creating
+ * derivative works of the Spine Runtimes is permitted under the terms and
+ * conditions of Section 2 of the Spine Editor License Agreement:
+ * http://esotericsoftware.com/spine-editor-license
+ *
+ * Otherwise, it is permitted to integrate the Spine Runtimes into software
+ * or otherwise create derivative works of the Spine Runtimes (collectively,
+ * "Products"), provided that each user of the Products must obtain their own
+ * Spine Editor license and redistribution of the Products in any form must
+ * include this license and copyright notice.
+ *
+ * THE SPINE RUNTIMES ARE PROVIDED BY ESOTERIC SOFTWARE LLC "AS IS" AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL ESOTERIC SOFTWARE LLC BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES,
+ * BUSINESS INTERRUPTION, OR LOSS OF USE, DATA, OR PROFITS) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *****************************************************************************/
+
+import { type Bone, Vector2 } from "@esotericsoftware/spine-core";
+
+export class C3Matrix {
+
+	public a = 0;
+	public b = 0;
+	public c = 0;
+	public d = 0;
+	public tx = 0;
+	public ty = 0;
+
+	private tempPoint = new Vector2();
+
+	public update (x: number, y: number, angle: number) {
+		const cos = Math.cos(angle);
+		const sin = Math.sin(angle);
+		this.a = cos;
+		this.b = sin;
+		this.c = -sin;
+		this.d = cos;
+		this.tx = x;
+		this.ty = y;
+	}
+
+	public gameToSkeleton (x: number, y: number) {
+		const tx = x - this.tx;
+		const ty = y - this.ty;
+		const { a, b, c, d, tempPoint } = this;
+		const delta = a * d - b * c;
+		tempPoint.x = (d * tx - c * ty) / delta;
+		tempPoint.y = (a * ty - b * tx) / delta;
+		return tempPoint;
+	}
+
+	public gameToBone (x: number, y: number, bone: Bone) {
+		const point = this.gameToSkeleton(x, y);
+		if (bone.parent)
+			return bone.parent.applied.worldToLocal(point);
+		return bone.applied.worldToLocal(point);
+	}
+
+	public skeletonToGame = (skeletonX: number, skeletonY: number) => {
+		const { a, b, c, d, tempPoint } = this;
+		tempPoint.x = a * skeletonX + c * skeletonY + this.tx;
+		tempPoint.y = b * skeletonX + d * skeletonY + this.ty;
+		return tempPoint;
+	}
+
+	public boneToGame (bone: Bone) {
+		const { applied } = bone;
+		return this.skeletonToGame(applied.worldX, applied.worldY);
+	}
+
+}

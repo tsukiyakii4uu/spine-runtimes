@@ -1,6 +1,6 @@
 // / <reference types="editor/sdk" />
 
-import type { AnimationState, AssetLoader, Skeleton, SkeletonRendererCore, SpineBoundsProvider, TextureAtlas } from "@esotericsoftware/spine-construct3-lib";
+import type { AnimationState, AssetLoader, C3Matrix, C3RendererEditor, Skeleton, SpineBoundsProvider, TextureAtlas, } from "@esotericsoftware/spine-construct3-lib";
 import type { SpineC3PluginType } from "./type";
 
 const SDK = globalThis.SDK;
@@ -25,7 +25,8 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 	animation?: string;
 
 	private assetLoader: AssetLoader;
-	private skeletonRenderer: SkeletonRendererCore;
+	private skeletonRenderer?: C3RendererEditor;
+	private matrix: C3Matrix;
 
 	// position mode
 	private positioningBounds = false;
@@ -40,10 +41,6 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		height: 200,
 	};
 
-	// utils for drawing
-	private tempVertices = new Float32Array(4096);
-	private tempColors = new Float32Array(4096);
-
 	// errors
 	private errorTextureAtlas?: string;
 	private errorSkeleton?: string;
@@ -56,7 +53,7 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		spine.Skeleton.yDown = true;
 
 		this.assetLoader = new spine.AssetLoader();
-		this.skeletonRenderer = new spine.SkeletonRendererCore();
+		this.matrix = new spine.C3Matrix();
 	}
 
 	Release () {
@@ -118,64 +115,13 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 				skeleton.scaleY = _inst.GetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_Y) as number;
 			}
 
-			const opacity = _inst.GetOpacity();
-			const cos = Math.cos(offsetAngle);
-			const sin = Math.sin(offsetAngle);
-			const inv255 = 1 / 255;
-
 			this.update(0);
-			let command = this.skeletonRenderer.render(skeleton);
-			while (command) {
-				const { numVertices, positions, uvs, colors, indices, numIndices, blendMode } = command;
-
-				const vertices = this.tempVertices.length < numVertices * 3
-					? (this.tempVertices = new Float32Array(numVertices * 3))
-					: this.tempVertices;
-
-				const c3colors = this.tempColors.length < numVertices * 4
-					? (this.tempColors = new Float32Array(numVertices * 4))
-					: this.tempColors;
-
-				for (let i = 0; i < numVertices; i++) {
-					const srcIndex = i * 2;
-					const dstIndex = i * 3;
-					const x = positions[srcIndex];
-					const y = positions[srcIndex + 1];
-					vertices[dstIndex] = x * cos - y * sin + offsetX;
-					vertices[dstIndex + 1] = x * sin + y * cos + offsetY;
-					vertices[dstIndex + 2] = 0;
-
-					const color = colors[i];
-					const colorDst = i * 4;
-					const alpha = (color >>> 24 & 0xFF) * inv255 * opacity;
-					const alphaInverse = inv255 * alpha;
-					c3colors[colorDst] = (color >>> 16 & 0xFF) * alphaInverse;
-					c3colors[colorDst + 1] = (color >>> 8 & 0xFF) * alphaInverse;
-					c3colors[colorDst + 2] = (color & 0xFF) * alphaInverse;
-					c3colors[colorDst + 3] = alpha;
-				}
-
-				iRenderer.ResetColor();
-				iRenderer.SetBlendMode(spine.BlendingModeSpineToC3[blendMode]);
-				iRenderer.SetTextureFillMode();
-				iRenderer.SetTexture(command.texture.texture);
-
-				iRenderer.DrawMesh(
-					vertices.subarray(0, numVertices * 3),
-					uvs.subarray(0, numVertices * 2),
-					indices.subarray(0, numIndices),
-					c3colors,
-				);
-
-
-				command = command.next;
-			}
-
-			iRenderer.SetAlphaBlend();
-			iRenderer.SetColorFillMode();
-			iRenderer.SetColorRgba(0.25, 0, 0, 0.25);
-			iRenderer.LineQuad(_inst.GetQuad());
-			iRenderer.Line(rectX, rectY, offsetX, offsetY);
+			this.skeletonRenderer ||= new spine.C3RendererEditor(iRenderer, skeleton, this.matrix);
+			this.skeletonRenderer.draw(_inst.GetOpacity());
+			const quad = _inst.GetQuad();
+			if (_inst.GetPropertyValue(PLUGIN_CLASS.PROP_DEBUG_SKELETON) as boolean)
+				this.skeletonRenderer.drawDebug(rectX, rectY, quad);
+			this.skeletonRenderer.renderGameObjectBounds(rectX, rectY, quad);
 
 		} else {
 			iRenderer.SetAlphaBlend();
@@ -501,6 +447,10 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		state.update(delta);
 		skeleton.update(delta);
 		state.apply(skeleton);
+		this.matrix.update(
+			this._inst.GetX() + (this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_X) as number),
+			this._inst.GetY() + (this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_Y) as number),
+			this._inst.GetAngle() + (this._inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_ANGLE) as number));
 		skeleton.updateWorldTransform(spine.Physics.update);
 	}
 

@@ -1,4 +1,4 @@
-import type { AnimationState, AnimationStateListener, AssetLoader, Bone, Event, NumberArrayLike, RegionAttachment, Skeleton, SkeletonRendererCore, Skin, Slot, TextureAtlas, } from "@esotericsoftware/spine-construct3-lib";
+import type { AnimationState, AnimationStateListener, AssetLoader, Bone, C3Matrix, C3RendererRuntime, Event, NumberArrayLike, RegionAttachment, Skeleton, Skin, Slot, TextureAtlas, } from "@esotericsoftware/spine-construct3-lib";
 
 const C3 = globalThis.C3;
 const spine = globalThis.spine;
@@ -39,12 +39,8 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 	public triggeredEventData?: Event;
 
 	private assetLoader: AssetLoader;
-	private skeletonRenderer: SkeletonRendererCore;
-
-	private a = 0;
-	private b = 0;
-	private c = 0;
-	private d = 0;
+	private skeletonRenderer?: C3RendererRuntime;
+	private matrix: C3Matrix;
 
 	private tempVertices = new Float32Array(4096);
 	private tempColors = new Float32Array(4096);
@@ -86,7 +82,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		}
 
 		this.assetLoader = new spine.AssetLoader();
-		this.skeletonRenderer = new spine.SkeletonRendererCore();
+		this.matrix = new spine.C3Matrix();
 
 		this._setTicking(true);
 	}
@@ -125,7 +121,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 	}
 
 	private update (delta: number) {
-		const { state, skeleton, animationSpeed, physicsMode } = this;
+		const { state, skeleton, animationSpeed, physicsMode, matrix } = this;
 
 		if (!skeleton || !state) return;
 
@@ -133,17 +129,13 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		state.update(adjustedDelta);
 		skeleton.update(adjustedDelta);
 		state.apply(skeleton);
-
-		const cos = Math.cos(this.angle + this.propOffsetAngle);
-		const sin = Math.sin(this.angle + this.propOffsetAngle);
-		this.a = cos;
-		this.b = sin;
-		this.c = -sin;
-		this.d = cos;
-
+		matrix.update(
+			this.x + this.propOffsetX,
+			this.y + this.propOffsetY,
+			this.angle + this.propOffsetAngle);
 		skeleton.updateWorldTransform(physicsMode);
 
-		this.updateHandles(skeleton);
+		this.updateHandles(skeleton, matrix);
 		this.updateBoneFollowers();
 	}
 
@@ -156,132 +148,17 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		const { skeleton } = this;
 		if (!skeleton) return;
 
-		this.renderSkeleton(renderer, skeleton);
-		this.renderDragHandles(renderer);
-		this.renderDebugSkeleton(renderer, skeleton);
+		this.skeletonRenderer ||= new spine.C3RendererRuntime(renderer, skeleton, this.matrix);
+		this.skeletonRenderer.draw(this.opacity);
+		if (this.propDebugSkeleton) this.skeletonRenderer.drawDebug(this.x, this.y, this.getBoundingQuad(false));
+		this.renderDragHandles();
 	}
 
-	private renderSkeleton (renderer: IRenderer, skeleton: Skeleton) {
-		let command = this.skeletonRenderer.render(skeleton);
-		const opacity = this.opacity;
-		const inv255 = 1 / 255;
-		while (command) {
-			const { numVertices, positions, uvs, colors, indices, numIndices, blendMode } = command;
-
-			const vertices = this.tempVertices.length < numVertices * 3
-				? (this.tempVertices = new Float32Array(numVertices * 3))
-				: this.tempVertices;
-
-			const c3colors = this.tempColors.length < numVertices * 4
-				? (this.tempColors = new Float32Array(numVertices * 4))
-				: this.tempColors;
-
-			for (let i = 0; i < numVertices; i++) {
-				const srcIndex = i * 2;
-				const { x, y } = this.skeletonToC3WorldCoordinates(positions[srcIndex], positions[srcIndex + 1]);
-
-				const dstIndex = i * 3;
-				vertices[dstIndex] = x;
-				vertices[dstIndex + 1] = y;
-				vertices[dstIndex + 2] = 0;
-
-				const color = colors[i];
-				const colorDst = i * 4;
-				const alpha = (color >>> 24 & 0xFF) * inv255 * opacity;
-				const alphaInverse = inv255 * alpha;
-				c3colors[colorDst] = (color >>> 16 & 0xFF) * alphaInverse;
-				c3colors[colorDst + 1] = (color >>> 8 & 0xFF) * alphaInverse;
-				c3colors[colorDst + 2] = (color & 0xFF) * alphaInverse;
-				c3colors[colorDst + 3] = alpha;
-			}
-
-			renderer.setTexture(command.texture.texture);
-			renderer.setBlendMode(spine.BlendingModeSpineToC3[blendMode]);
-			renderer.drawMesh(
-				vertices.subarray(0, numVertices * 3),
-				uvs.subarray(0, numVertices * 2),
-				indices.subarray(0, numIndices),
-				c3colors.subarray(0, numVertices * 4),
-			);
-
-			command = command.next;
-		}
-	}
-
-	private renderDragHandles (renderer: IRenderer) {
+	private renderDragHandles () {
 		for (const { bone, radius, debug } of this.dragHandles) {
 			if (!debug) continue;
-			const boneApplied = bone.applied;
-			const { x: x1, y: y1 } = this.skeletonToC3WorldCoordinates(boneApplied.worldX, boneApplied.worldY);
-			renderer.setColorFillMode();
-			renderer.setColor([1, 0, 0, .2]);
-			renderer.convexPoly(this.circle(x1, y1, radius));
+			this.skeletonRenderer?.renderDragHandles(bone, radius);
 		}
-	}
-
-	private renderDebugSkeleton (renderer: IRenderer, skeleton: Skeleton) {
-		if (!this.propDebugSkeleton) return;
-
-		const bones = skeleton.bones;
-		for (let i = 0, n = bones.length; i < n; i++) {
-			const bone = bones[i];
-			if (!bone.parent) continue;
-			const boneApplied = bone.applied;
-			const { x: x1, y: y1 } = this.skeletonToC3WorldCoordinates(boneApplied.worldX, boneApplied.worldY);
-			const x2 = bone.data.length * boneApplied.a + x1;
-			const y2 = bone.data.length * boneApplied.c + y1;
-
-			renderer.setColor([1, 0, 0, 1]);
-			renderer.setColorFillMode();
-
-			const t = this.tempPoint.set(y2 - y1, x1 - x2);
-			t.normalize();
-			const width = 1 * 0.5;
-			const tx = t.x * width;
-			const ty = t.y * width;
-			renderer.convexPoly([
-				x1 + tx, y1 + ty,
-				x1 - tx, y1 - ty,
-				x2 + tx, y2 + ty,
-				x2 - tx, y2 - ty,
-				x2 + tx, y2 + ty,
-				x1 - tx, y1 - ty,
-			]);
-
-			renderer.setColor([0, 1, 0, 1]);
-			renderer.convexPoly(this.circle(x1, y1, 2));
-		}
-
-		// debug bounds
-		renderer.setAlphaBlendMode();
-		renderer.setColorFillMode();
-		renderer.setColorRgba(0.25, 0, 0, 0.25);
-		renderer.lineQuad(this.getBoundingQuad(false));
-		renderer.line(this.x, this.y, this.x + this.propOffsetX, this.y + this.propOffsetY);
-	}
-
-	private circle (x: number, y: number, radius: number) {
-		let segments = Math.max(1, (6 * spine.MathUtils.cbrt(radius)) | 0);
-		if (segments <= 0) throw new Error("segments must be > 0.");
-		const angle = 2 * spine.MathUtils.PI / segments;
-		const cos = Math.cos(angle);
-		const sin = Math.sin(angle);
-		let cx = radius, cy = 0;
-		segments--;
-		const poly = [];
-		for (let i = 0; i < segments; i++) {
-			poly.push(x, y);
-			poly.push(x + cx, y + cy);
-			const temp = cx;
-			cx = cos * cx - sin * cy;
-			cy = sin * temp + cos * cy;
-			poly.push(x + cx, y + cy);
-		}
-		poly.push(x, y, x + cx, y + cy);
-		cx = radius;
-		cy = 0;
-		poly.push(x + cx, y + cy);
-		return poly;
 	}
 
 	/**********/
@@ -327,7 +204,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		}
 	}
 
-	private updateHandles (skeleton: Skeleton) {
+	private updateHandles (skeleton: Skeleton, matrix: C3Matrix) {
 		if (this.dragHandles.size === 0) return;
 
 		// accessing mouse without having a mouse object will throw an error
@@ -357,16 +234,16 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 
 			if (handleObject.dragging) {
 				if (bone.parent) {
-					const { x, y } = this.c3WorldCoordinatesToBone(mx - handleObject.offsetX, my - handleObject.offsetY, bone);
+					const { x, y } = matrix.gameToBone(mx - handleObject.offsetX, my - handleObject.offsetY, bone);
 					boneApplied.x = x;
 					boneApplied.y = y;
 				} else {
-					const { x, y } = this.c3WorldCoordinatesToSkeleton(mx - handleObject.offsetX, my - handleObject.offsetY);
+					const { x, y } = matrix.gameToSkeleton(mx - handleObject.offsetX, my - handleObject.offsetY);
 					boneApplied.x = x / skeleton.scaleX;
 					boneApplied.y = -y / skeleton.scaleY * spine.Skeleton.yDir;
 				}
 			} else if (!this.prevLeftClickDown) {
-				const { x, y } = this.c3WorldCoordinatesToSkeleton(mx, my);
+				const { x, y } = matrix.gameToSkeleton(mx, my);
 				const inside = handleObject.slot
 					? this.isInsideSlot(x, y, handleObject.slot, true)
 					: this.inRadius(x, y, boneApplied.worldX, boneApplied.worldY, handleObject.radius);
@@ -402,7 +279,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 
 		if (skeletonCoordinate) return this.isPointInPolygon(vertices, hullLength, x, y);
 
-		const coords = this.c3WorldCoordinatesToSkeleton(x, y);
+		const coords = this.matrix.gameToSkeleton(x, y);
 		return this.isPointInPolygon(vertices, hullLength, coords.x, coords.y);
 	}
 
@@ -806,7 +683,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 			const instance = this.runtime.getInstanceByUid(follower.uid) as IWorldInstance;
 			if (!instance) continue;
 
-			const { x, y } = this.boneToC3WorldCoordinates(bone);
+			const { x, y } = this.matrix.boneToGame(bone);
 			const boneRotation = bone.applied.getWorldRotationX();
 
 			// Apply rotation to offset
@@ -820,41 +697,6 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 			instance.y = y + rotatedOffsetY;
 			instance.angleDegrees = boneRotation + follower.offsetAngle;
 		}
-	}
-
-	/**********/
-
-	/*
-	*  Coordinates transformation
-	*/
-
-	private c3WorldCoordinatesToSkeleton (x: number, y: number) {
-		const tx = x - (this.x + this.propOffsetX);
-		const ty = y - (this.y + this.propOffsetY);
-		const { a: ta, b: tb, c: tc, d: td, tempPoint } = this;
-		const delta = ta * td - tb * tc;
-		tempPoint.x = (td * tx - tc * ty) / delta;
-		tempPoint.y = (ta * ty - tb * tx) / delta;
-		return this.tempPoint;
-	}
-
-	private c3WorldCoordinatesToBone (x: number, y: number, bone: Bone) {
-		const point = this.c3WorldCoordinatesToSkeleton(x, y);
-		if (bone.parent)
-			return bone.parent.applied.worldToLocal(point);
-		return bone.applied.worldToLocal(point);
-	}
-
-	private skeletonToC3WorldCoordinates (skeletonX: number, skeletonY: number) {
-		const { a, b, c, d, tempPoint } = this;
-		tempPoint.x = a * skeletonX + c * skeletonY + this.x + this.propOffsetX;
-		tempPoint.y = b * skeletonX + d * skeletonY + this.y + this.propOffsetY;
-		return tempPoint;
-	}
-
-	private boneToC3WorldCoordinates (bone: Bone) {
-		const { applied } = bone;
-		return this.skeletonToC3WorldCoordinates(applied.worldX, applied.worldY);
 	}
 
 	/**********/
@@ -947,7 +789,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 			return 0;
 		}
 
-		const point = this.boneToC3WorldCoordinates(bone);
+		const point = this.matrix.boneToGame(bone);
 		return point.x;
 	}
 
@@ -964,7 +806,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 			return 0;
 		}
 
-		const point = this.boneToC3WorldCoordinates(bone);
+		const point = this.matrix.boneToGame(bone);
 		return point.y;
 	}
 
@@ -972,7 +814,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		const bone = this.getBone(boneName);
 		if (!bone) return;
 
-		const { x, y } = this.c3WorldCoordinatesToBone(c3X, c3Y, bone);
+		const { x, y } = this.matrix.gameToBone(c3X, c3Y, bone);
 		bone.applied.x = x;
 		bone.applied.y = y;
 	}

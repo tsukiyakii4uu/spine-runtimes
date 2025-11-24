@@ -61,7 +61,7 @@ export class C3TextureEditor extends Texture {
 	}
 }
 
-export class C3Texture extends Texture {
+export class C3TextureRuntime extends Texture {
 	texture: ITexture;
 	renderer?: IRenderer;
 

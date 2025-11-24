@@ -1,3 +1,3 @@
-# spine-ts THREE.JS
+# spine-ts Construct3 Lib
 
-Please see the top-level [README.md](../README.md) for more information.
+This is just an internal lib that contains spine-core and additional basic functions for C3.
