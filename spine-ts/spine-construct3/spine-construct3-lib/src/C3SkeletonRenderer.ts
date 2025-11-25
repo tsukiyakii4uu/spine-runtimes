@@ -27,7 +27,7 @@
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
-import { type BlendMode, type Bone, MathUtils, type Skeleton, SkeletonRendererCore, Vector2 } from "@esotericsoftware/spine-core";
+import { type BlendMode, type Bone, ClippingAttachment, MathUtils, MeshAttachment, PathAttachment, RegionAttachment, type Skeleton, SkeletonRendererCore, Utils, Vector2 } from "@esotericsoftware/spine-core";
 import type { C3Matrix } from "./C3Matrix";
 import { BlendingModeSpineToC3, type C3TextureEditor, type C3TextureRuntime } from "./C3Texture";
 
@@ -43,6 +43,7 @@ abstract class C3SkeletonRenderer<
 	private tempVertices = new Float32Array(4096);
 	private tempColors = new Float32Array(4096);
 	private tempPoint = new Vector2();
+	private tempArray = [] as number[];
 	private inv255 = 1 / 255;
 
 	constructor (
@@ -101,6 +102,10 @@ abstract class C3SkeletonRenderer<
 	drawDebug (x: number, y: number, quad: C3Quad) {
 		const { skeleton, matrix } = this;
 
+		this.setColorFillMode();
+		this.setBlendMode();
+
+		// bones
 		const bones = skeleton.bones;
 		for (let i = 0, n = bones.length; i < n; i++) {
 			const bone = bones[i];
@@ -131,12 +136,125 @@ abstract class C3SkeletonRenderer<
 			this.poly(this.circle(x1, y1, 2));
 		}
 
+		// regions
+		this.setColor(0, 0, 1, 0.5);
+		const slots = skeleton.slots;
+		for (let i = 0, n = slots.length; i < n; i++) {
+			const slot = slots[i];
+			if (!slot.bone.active) continue;
+			const attachment = slot.applied.attachment;
+			if (attachment instanceof RegionAttachment) {
+				const vertices = this.tempVertices;
+				attachment.computeWorldVertices(slot, vertices, 0, 2);
+				this.line(vertices[0], vertices[1], vertices[2], vertices[3], x, y);
+				this.line(vertices[2], vertices[3], vertices[4], vertices[5], x, y);
+				this.line(vertices[4], vertices[5], vertices[6], vertices[7], x, y);
+				this.line(vertices[6], vertices[7], vertices[0], vertices[1], x, y);
+			}
+		}
+
+		// meshes
+		for (let i = 0, n = slots.length; i < n; i++) {
+			const slot = slots[i];
+			if (!slot.bone.active) continue;
+			const attachment = slot.applied.attachment;
+			if (!(attachment instanceof MeshAttachment)) continue;
+			const vertices = this.tempVertices;
+			attachment.computeWorldVertices(skeleton, slot, 0, attachment.worldVerticesLength, vertices, 0, 2);
+			const triangles = attachment.triangles;
+			let hullLength = attachment.hullLength;
+
+			// mesh triangles
+			this.setColor(1, 0.64, 0, 0.5);
+			for (let ii = 0, nn = triangles.length; ii < nn; ii += 3) {
+				const v1 = triangles[ii] * 2, v2 = triangles[ii + 1] * 2, v3 = triangles[ii + 2] * 2;
+				this.triangle(
+					vertices[v1], vertices[v1 + 1],
+					vertices[v2], vertices[v2 + 1],
+					vertices[v3], vertices[v3 + 1],
+					x, y,
+				);
+			}
+
+			// mesh hulls
+			if (hullLength > 0) {
+				this.setColor(0, 0, 1, 0.5);
+				hullLength = (hullLength >> 1) * 2;
+				let lastX = vertices[hullLength - 2], lastY = vertices[hullLength - 1];
+				for (let ii = 0, nn = hullLength; ii < nn; ii += 2) {
+					const x1 = vertices[ii], y1 = vertices[ii + 1];
+					this.line(x1, y1, lastX, lastY, x, y);
+					lastX = x1;
+					lastY = y1;
+				}
+			}
+		}
+
+		// paths
+		for (let i = 0, n = slots.length; i < n; i++) {
+			const slot = slots[i];
+			if (!slot.bone.active) continue;
+			const attachment = slot.applied.attachment;
+			if (!(attachment instanceof PathAttachment)) continue;
+			let nn = attachment.worldVerticesLength;
+			const world = this.tempArray = Utils.setArraySize(this.tempArray, nn, 0);
+			attachment.computeWorldVertices(skeleton, slot, 0, nn, world, 0, 2);
+			let x1 = world[2], y1 = world[3], x2 = 0, y2 = 0;
+			if (attachment.closed) {
+				this.setColor(1, 0.5, 0, 1);
+				const cx1 = world[0], cy1 = world[1], cx2 = world[nn - 2], cy2 = world[nn - 1];
+				x2 = world[nn - 4];
+				y2 = world[nn - 3];
+				this.curve(x1, y1, cx1, cy1, cx2, cy2, x2, y2, 32, x, y);
+				this.setColor(.75, .75, .75, 1);
+				this.line(x1, y1, cx1, cy1, x, y);
+				this.line(x2, y2, cx2, cy2, x, y);
+			}
+			nn -= 4;
+			for (let ii = 4; ii < nn; ii += 6) {
+				const cx1 = world[ii], cy1 = world[ii + 1], cx2 = world[ii + 2], cy2 = world[ii + 3];
+				x2 = world[ii + 4];
+				y2 = world[ii + 5];
+				this.setColor(1, 0.5, 0, 1);
+				this.curve(x1, y1, cx1, cy1, cx2, cy2, x2, y2, 32, x, y);
+				this.setColor(.75, .75, .75, 1);
+				this.line(x1, y1, cx1, cy1, x, y);
+				this.line(x2, y2, cx2, cy2, x, y);
+				x1 = x2;
+				y1 = y2;
+			}
+		}
+
+		// clipping
+		this.setColor(0.8, 0, 0, 1)
+		for (let i = 0, n = slots.length; i < n; i++) {
+			const slot = slots[i];
+			if (!slot.bone.active) continue;
+			const attachment = slot.applied.attachment;
+			if (!(attachment instanceof ClippingAttachment)) continue;
+			const nn = attachment.worldVerticesLength;
+			const world = this.tempArray = Utils.setArraySize(this.tempArray, nn, 0);
+			attachment.computeWorldVertices(skeleton, slot, 0, nn, world, 0, 2);
+			for (let i = 0, n = world.length; i < n; i += 2) {
+				const x1 = world[i];
+				const y1 = world[i + 1];
+				const x2 = world[(i + 2) % world.length];
+				const y2 = world[(i + 3) % world.length];
+				this.line(x1, y1, x2, y2, x, y);
+			}
+		}
+
 		this.renderGameObjectBounds(x, y, quad);
 	}
 
 	protected abstract setColor (r: number, g: number, b: number, a: number): void;
 	protected abstract setColorFillMode (): void;
+	protected abstract setBlendMode (): void;
 	protected abstract poly (points: number[]): void;
+	protected abstract lineInternal (x: number, y: number, x2: number, y2: number): void;
+	protected line (x: number, y: number, x2: number, y2: number, offsetX = 0, offsetY = 0) {
+		this.lineInternal(x + offsetX, y + offsetY, x2 + offsetX, y2 + offsetY);
+	};
 
 	protected abstract renderSkeleton (vertices: Float32Array, uvs: Float32Array, indices: Uint16Array, colors: Float32Array, texture: Texture, blendMode: BlendMode): void;
 	public abstract renderGameObjectBounds (x: number, y: number, quad: DOMQuad | SDK.Quad): void;
@@ -164,6 +282,63 @@ abstract class C3SkeletonRenderer<
 		poly.push(x + cx, y + cy);
 		return poly;
 	}
+
+	protected triangle (x: number, y: number, x2: number, y2: number, x3: number, y3: number, offsetX = 0, offsetY = 0) {
+		this.line(x, y, x2, y2, offsetX, offsetY);
+		this.line(x2, y2, x3, y3, offsetX, offsetY);
+		this.line(x3, y3, x, y, offsetX, offsetY);
+	}
+
+	protected curve (x1: number, y1: number, cx1: number, cy1: number, cx2: number, cy2: number, x2: number, y2: number, segments: number, offsetX = 0, offsetY = 0) {
+		x1 += offsetX;
+		y1 += offsetY;
+		cx1 += offsetX;
+		cy1 += offsetY;
+		x2 += offsetX;
+		y2 += offsetY;
+		cx2 += offsetX;
+		cy2 += offsetY;
+
+		// Algorithm from: http://www.antigrain.com/research/bezier_interpolation/index.html#PAGE_BEZIER_INTERPOLATION
+		const subdiv_step = 1 / segments;
+		const subdiv_step2 = subdiv_step * subdiv_step;
+		const subdiv_step3 = subdiv_step * subdiv_step * subdiv_step;
+
+		const pre1 = 3 * subdiv_step;
+		const pre2 = 3 * subdiv_step2;
+		const pre4 = 6 * subdiv_step2;
+		const pre5 = 6 * subdiv_step3;
+
+		const tmp1x = x1 - cx1 * 2 + cx2;
+		const tmp1y = y1 - cy1 * 2 + cy2;
+
+		const tmp2x = (cx1 - cx2) * 3 - x1 + x2;
+		const tmp2y = (cy1 - cy2) * 3 - y1 + y2;
+
+		let fx = x1;
+		let fy = y1;
+
+		let dfx = (cx1 - x1) * pre1 + tmp1x * pre2 + tmp2x * subdiv_step3;
+		let dfy = (cy1 - y1) * pre1 + tmp1y * pre2 + tmp2y * subdiv_step3;
+
+		let ddfx = tmp1x * pre4 + tmp2x * pre5;
+		let ddfy = tmp1y * pre4 + tmp2y * pre5;
+
+		const dddfx = tmp2x * pre5;
+		const dddfy = tmp2y * pre5;
+
+		while (segments-- > 0) {
+			this.line(fx, fy, fx + dfx, fy + dfy);
+			fx += dfx;
+			fy += dfy;
+			dfx += ddfx;
+			dfy += ddfy;
+			ddfx += dddfx;
+			ddfy += dddfy;
+		}
+		this.line(fx, fy, x2, y2);
+	}
+
 }
 
 export class C3RendererRuntime extends C3SkeletonRenderer<IRenderer, C3TextureRuntime> {
@@ -179,8 +354,16 @@ export class C3RendererRuntime extends C3SkeletonRenderer<IRenderer, C3TextureRu
 		this.renderer.setColorFillMode();
 	}
 
+	protected setBlendMode (blenMode: BlendModeParameter = "normal"): void {
+		this.renderer.setBlendMode(blenMode);
+	}
+
 	protected poly (points: number[]): void {
 		this.renderer.convexPoly(points);
+	}
+
+	protected lineInternal (x: number, y: number, x2: number, y2: number): void {
+		this.renderer.line(x, y, x2, y2);
 	}
 
 	protected renderSkeleton (vertices: Float32Array, uvs: Float32Array, indices: Uint16Array, colors: Float32Array, texture: C3TextureRuntime, blendMode: BlendMode) {
@@ -216,8 +399,16 @@ export class C3RendererEditor extends C3SkeletonRenderer<SDK.Gfx.IWebGLRenderer,
 		this.renderer.SetColorFillMode();
 	}
 
+	protected setBlendMode (blenMode: BlendModeParameter = "normal"): void {
+		this.renderer.SetBlendMode(blenMode);
+	}
+
 	protected poly (points: number[]): void {
 		this.renderer.ConvexPoly(points);
+	}
+
+	protected lineInternal (x: number, y: number, x2: number, y2: number): void {
+		this.renderer.Line(x, y, x2, y2);
 	}
 
 	protected renderSkeleton (vertices: Float32Array, uvs: Float32Array, indices: Uint16Array, colors: Float32Array, texture: C3TextureEditor, blendMode: BlendMode) {
