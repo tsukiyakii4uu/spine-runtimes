@@ -33,13 +33,36 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 	private positionModePrevX = 0;
 	private positionModePrevY = 0;
 	private positionModePrevAngle = 0;
-	private spineBoundsInit = false;
+
+	/*
+	 * C3 GameObjects have two sizes:
+	 * - the original size that is determined implementing GetOriginalWidth/GetOriginalHeight
+	 * - the current size that is set using SetSize or SetWidth/SetHeight
+	 * The ratio between this two size determines the C3 GameObjects scale.
+	 *
+	 * The origin is by default in the center and set using SetOrigin;
+	 * it's usually moved in the Image Editor, but that's disable with Spine C3 GameObjects.
+	 *
+	 * In a Spine C3 GameObject:
+	 * - the original size is equivalent to spineBounds that is set selecting the BoundsProvider
+	 * - changing the C3 GameObject size from the editor will scale the skeleton by using skeleton.scaleX/Y
+	 *   This information is stored into (PROP_SKELETON_SCALE_X and Y) and later passed to the runtime
+	 * - the origin is position at the skeleton root
+	 *
+	 * positioningBounds allows to offset the position and the size of the C3 GameObject
+	 * with the one of the skeleton. When selected it allows to:
+	 * - move the C3 GameObjects position (visually the rectangle) keeping the skeleton still.
+	 *   This is obtained by adding an offset to the GameObject position.
+	 *   This information is stored into (PROP_SKELETON_SCALE_X and Y) and later passed to the runtime
+	 * - scale the C3 GameObjects keeping the skeleton.scaleX/Y as-is.
+	 */
 	private spineBounds = {
-		x: 0,
-		y: 0,
-		width: 200,
-		height: 200,
+		x: 0, // determine the origin x (-x/width)
+		y: 0, // determine the origin y (-y/height)
+		width: 200, // determine the original width (and the origin x)
+		height: 200, // determine the original height (and the origin y)
 	};
+	private spineBoundsInit = false;
 
 	// errors
 	private errorTextureAtlas?: string;

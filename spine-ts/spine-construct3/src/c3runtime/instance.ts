@@ -42,10 +42,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 	private skeletonRenderer?: C3RendererRuntime;
 	private matrix: C3Matrix;
 
-	private tempVertices = new Float32Array(4096);
-	private tempColors = new Float32Array(4096);
 	private verticesTemp = spine.Utils.newFloatArray(2 * 1024);
-	private tempPoint = new spine.Vector2();
 
 	private boneFollowers = new Map<string, { uid: number, offsetX: number, offsetY: number, offsetAngle: number }>();
 

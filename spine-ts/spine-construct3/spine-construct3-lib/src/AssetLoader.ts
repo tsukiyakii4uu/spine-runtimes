@@ -27,7 +27,7 @@
  * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
-import { AtlasAttachmentLoader, SkeletonBinary, type SkeletonData, SkeletonJson, TextureAtlas, TextureAtlasPage } from "@esotericsoftware/spine-core";
+import { AtlasAttachmentLoader, SkeletonBinary, type SkeletonData, SkeletonJson, TextureAtlas, type TextureAtlasPage } from "@esotericsoftware/spine-core";
 import { C3TextureEditor, C3TextureRuntime } from "./C3Texture";
 
 
