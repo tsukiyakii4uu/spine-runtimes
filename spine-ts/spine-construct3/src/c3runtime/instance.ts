@@ -357,6 +357,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		this.renderer = undefined;
 		this.skeleton = undefined;
 		this.state = undefined;
+		this.dragHandleDispose();
 	}
 
 	/**********/
