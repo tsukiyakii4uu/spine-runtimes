@@ -130,9 +130,11 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 			this.x + this.propOffsetX,
 			this.y + this.propOffsetY,
 			this.angle + this.propOffsetAngle);
-		skeleton.updateWorldTransform(physicsMode);
 
 		this.updateHandles(skeleton, matrix);
+
+		skeleton.updateWorldTransform(physicsMode);
+
 		this.updateBoneFollowers();
 	}
 
@@ -164,7 +166,9 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 	/*
 	 *  Drag handles
 	 */
-
+	private touchDown = false;
+	private touchX = 0;
+	private touchY = 0;
 	public addDragHandle (type: 0 | 1, name: string, radius = 10, debug = false) {
 		if (type === 0) {
 			const bone = this.getBone(name);
@@ -175,6 +179,36 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 			if (!slot) return;
 			this.dragHandles.add({ slot, bone: slot.bone, debug, radius, offsetX: 0, offsetY: 0 });
 		}
+
+		if (this.dragHandles.size === 1) {
+			this.touchDown = false;
+			this.runtime.addEventListener("pointerdown", this.dragHandleDown);
+			this.runtime.addEventListener("pointermove", this.dragHandleMove);
+			this.runtime.addEventListener("pointerup", this.dragHandleUp);
+		}
+	}
+
+	private dragHandleDown = (event: ConstructPointerEvent) => {
+		if (event.button !== 0) return;
+		this.touchDown = true;
+		this.touchX = event.clientX;
+		this.touchY = event.clientY;
+	};
+
+	private dragHandleMove = (event: ConstructPointerEvent) => {
+		if (!this.touchDown) return;
+		this.touchX = event.clientX;
+		this.touchY = event.clientY;
+	}
+
+	private dragHandleUp = (event: ConstructPointerEvent) => {
+		if (event.button === 0) this.touchDown = false;
+	}
+
+	private dragHandleDispose () {
+		this.runtime.removeEventListener("pointerdown", this.dragHandleDown);
+		this.runtime.removeEventListener("pointermove", this.dragHandleMove);
+		this.runtime.removeEventListener("pointerup", this.dragHandleUp);
 	}
 
 	public removeDragHandle (type: 0 | 1, name: string) {
@@ -185,7 +219,7 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 			for (const handle of this.dragHandles) {
 				if (handle.bone === bone && !handle.slot) {
 					this.dragHandles.delete(handle);
-					return;
+					break;
 				}
 			}
 		} else {
@@ -195,60 +229,51 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 			for (const handle of this.dragHandles) {
 				if (handle.slot === slot) {
 					this.dragHandles.delete(handle);
-					return;
+					break;
 				}
 			}
 		}
+
+		if (this.dragHandles.size === 0) this.dragHandleDispose();
 	}
 
 	private updateHandles (skeleton: Skeleton, matrix: C3Matrix) {
 		if (this.dragHandles.size === 0) return;
 
-		// accessing mouse without having a mouse object will throw an error
-		let mouse: IMouseObjectType;
-		try {
-			mouse = this.runtime.mouse;
-		} catch (_) {
+		const { touchDown } = this;
+		if (!touchDown) {
+			if (this.prevLeftClickDown) {
+				this.prevLeftClickDown = false;
+				for (const handleObject of this.dragHandles) handleObject.dragging = false;
+			}
 			return;
 		}
 
-		const isLeftClickDown = mouse.isMouseButtonDown(0);
-		if (this.dragHandles.size <= 0) {
-			this.prevLeftClickDown = isLeftClickDown;
-			return;
-		}
-
-		if (!isLeftClickDown) {
-			this.prevLeftClickDown = false;
-			for (const handleObject of this.dragHandles) handleObject.dragging = false;
-			return;
-		}
-
-		const [mx, my] = mouse.getMousePosition();
+		const { touchX, touchY } = this;
 		for (const handleObject of this.dragHandles) {
 			const bone = handleObject.bone;
-			const boneApplied = bone.applied;
 
 			if (handleObject.dragging) {
+				const pose = bone.pose;
 				if (bone.parent) {
-					const { x, y } = matrix.gameToBone(mx - handleObject.offsetX, my - handleObject.offsetY, bone);
-					boneApplied.x = x;
-					boneApplied.y = y;
+					const { x, y } = matrix.gameToBone(touchX - handleObject.offsetX, touchY - handleObject.offsetY, bone);
+					pose.x = x;
+					pose.y = y;
 				} else {
-					const { x, y } = matrix.gameToSkeleton(mx - handleObject.offsetX, my - handleObject.offsetY);
-					boneApplied.x = x / skeleton.scaleX;
-					boneApplied.y = -y / skeleton.scaleY * spine.Skeleton.yDir;
+					const { x, y } = matrix.gameToSkeleton(touchX - handleObject.offsetX, touchY - handleObject.offsetY);
+					pose.x = x / skeleton.scaleX;
+					pose.y = -y / skeleton.scaleY * spine.Skeleton.yDir;
 				}
 			} else if (!this.prevLeftClickDown) {
-				const { x, y } = matrix.gameToSkeleton(mx, my);
+				const applied = bone.applied;
+				const { x, y } = matrix.gameToSkeleton(touchX, touchY);
 				const inside = handleObject.slot
 					? this.isInsideSlot(x, y, handleObject.slot, true)
-					: this.inRadius(x, y, boneApplied.worldX, boneApplied.worldY, handleObject.radius);
-
+					: this.inRadius(x, y, applied.worldX, applied.worldY, handleObject.radius);
 				if (inside) {
 					handleObject.dragging = true;
-					handleObject.offsetX = x - boneApplied.worldX;
-					handleObject.offsetY = y - boneApplied.worldY;
+					handleObject.offsetX = x - applied.worldX;
+					handleObject.offsetY = y - applied.worldY;
 				}
 			}
 		}
