@@ -145,9 +145,9 @@ class SpineC3Instance extends globalThis.ISDKWorldInstanceBase {
 		const { skeleton } = this;
 		if (!skeleton) return;
 
-		this.skeletonRenderer ||= new spine.C3RendererRuntime(renderer, skeleton, this.matrix);
-		this.skeletonRenderer.draw(this.opacity);
-		if (this.propDebugSkeleton) this.skeletonRenderer.drawDebug(this.x, this.y, this.getBoundingQuad(false));
+		this.skeletonRenderer ||= new spine.C3RendererRuntime(renderer, this.matrix);
+		this.skeletonRenderer.draw(skeleton, this.opacity);
+		if (this.propDebugSkeleton) this.skeletonRenderer.drawDebug(skeleton, this.x, this.y, this.getBoundingQuad(false));
 		this.renderDragHandles();
 	}
 

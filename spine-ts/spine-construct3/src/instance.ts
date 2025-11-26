@@ -91,91 +91,6 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		this.OnMakeOriginalSize();
 	}
 
-	Draw (iRenderer: SDK.Gfx.IWebGLRenderer, iDrawParams: SDK.Gfx.IDrawParams) {
-		this.layoutView ||= iDrawParams.GetLayoutView();
-		this.renderer ||= iRenderer;
-
-		this.loadAtlas();
-		this.loadSkeleton();
-		this.initBounds();
-
-		const { _inst, skeleton } = this;
-		const errorsString = this.getErrorsString();
-		if (skeleton && this.textureAtlas && !errorsString) {
-			this.setAnimation();
-			this.setSkin();
-
-			const rectX = _inst.GetX();
-			const rectY = _inst.GetY();
-			const rectAngle = _inst.GetAngle();
-			let offsetX = _inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_X) as number;
-			let offsetY = _inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_Y) as number;
-			let offsetAngle = _inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_ANGLE) as number;
-
-			if (!this.positioningBounds) {
-				offsetX += rectX;
-				offsetY += rectY;
-				offsetAngle += rectAngle;
-
-				const baseScaleX = _inst.GetWidth() / this.spineBounds.width;
-				const baseScaleY = _inst.GetHeight() / this.spineBounds.height;
-				skeleton.scaleX = baseScaleX;
-				skeleton.scaleY = baseScaleY;
-				_inst.SetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_X, baseScaleX);
-				_inst.SetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_Y, baseScaleY);
-			} else {
-				offsetX += this.positionModePrevX;
-				offsetY += this.positionModePrevY;
-				offsetAngle += this.positionModePrevAngle;
-				_inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_X, offsetX - rectX);
-				_inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_Y, offsetY - rectY);
-				_inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_ANGLE, offsetAngle - rectAngle);
-				this.positionModePrevX = rectX;
-				this.positionModePrevY = rectY;
-				this.positionModePrevAngle = rectAngle;
-
-				skeleton.scaleX = _inst.GetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_X) as number;
-				skeleton.scaleY = _inst.GetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_Y) as number;
-			}
-
-			this.update(0);
-			this.skeletonRenderer ||= new spine.C3RendererEditor(iRenderer, skeleton, this.matrix);
-			this.skeletonRenderer.draw(_inst.GetOpacity());
-			const quad = _inst.GetQuad();
-			if (_inst.GetPropertyValue(PLUGIN_CLASS.PROP_DEBUG_SKELETON) as boolean)
-				this.skeletonRenderer.drawDebug(rectX, rectY, quad);
-			this.skeletonRenderer.renderGameObjectBounds(rectX, rectY, quad);
-
-		} else {
-			iRenderer.SetAlphaBlend();
-
-			const logo = (this._sdkType as SpineC3PluginType).getSpineLogo(iRenderer);
-			if (logo) {
-				iRenderer.SetColorRgba(1, 1, 1, errorsString ? 0.25 : 1);
-				iRenderer.SetTexture(logo);
-			} else {
-				iRenderer.SetColorFillMode();
-				iRenderer.SetColorRgba(0.25, 0, 0, 0.25);
-			}
-			const quad = _inst.GetQuad();
-			iRenderer.Quad(quad);
-
-			if (errorsString) {
-				const webglText = this.getErrorTextC3(iRenderer, this.layoutView);
-				webglText.SetSize(_inst.GetWidth(), _inst.GetHeight(), this.layoutView.GetZoomFactor());
-				webglText.SetText(errorsString);
-
-				const texture = webglText.GetTexture();
-				if (!texture) return;
-
-				iRenderer.SetColorRgba(1, 1, 1, 1);
-				iRenderer.SetTexture(texture);
-				iRenderer.Quad3(quad, webglText.GetTexRect());
-			}
-
-		}
-	}
-
 	async OnPropertyChanged (id: string, value: EditorPropertyValueType) {
 		if (id === PLUGIN_CLASS.PROP_ATLAS) {
 			this.textureAtlasSID = -1;
@@ -239,6 +154,91 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 			}
 			this.positioningBounds = value;
 			return
+		}
+	}
+
+	Draw (iRenderer: SDK.Gfx.IWebGLRenderer, iDrawParams: SDK.Gfx.IDrawParams) {
+		this.layoutView ||= iDrawParams.GetLayoutView();
+		this.renderer ||= iRenderer;
+
+		this.loadAtlas();
+		this.loadSkeleton();
+		this.initBounds();
+
+		const { _inst, skeleton } = this;
+		const errorsString = this.getErrorsString();
+		if (skeleton && this.textureAtlas && !errorsString) {
+			this.setAnimation();
+			this.setSkin();
+
+			const rectX = _inst.GetX();
+			const rectY = _inst.GetY();
+			const rectAngle = _inst.GetAngle();
+			let offsetX = _inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_X) as number;
+			let offsetY = _inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_Y) as number;
+			let offsetAngle = _inst.GetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_ANGLE) as number;
+
+			if (!this.positioningBounds) {
+				offsetX += rectX;
+				offsetY += rectY;
+				offsetAngle += rectAngle;
+
+				const baseScaleX = _inst.GetWidth() / this.spineBounds.width;
+				const baseScaleY = _inst.GetHeight() / this.spineBounds.height;
+				skeleton.scaleX = baseScaleX;
+				skeleton.scaleY = baseScaleY;
+				_inst.SetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_X, baseScaleX);
+				_inst.SetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_Y, baseScaleY);
+			} else {
+				offsetX += this.positionModePrevX;
+				offsetY += this.positionModePrevY;
+				offsetAngle += this.positionModePrevAngle;
+				_inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_X, offsetX - rectX);
+				_inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_Y, offsetY - rectY);
+				_inst.SetPropertyValue(PLUGIN_CLASS.PROP_BOUNDS_OFFSET_ANGLE, offsetAngle - rectAngle);
+				this.positionModePrevX = rectX;
+				this.positionModePrevY = rectY;
+				this.positionModePrevAngle = rectAngle;
+
+				skeleton.scaleX = _inst.GetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_X) as number;
+				skeleton.scaleY = _inst.GetPropertyValue(PLUGIN_CLASS.PROP_SKELETON_SCALE_Y) as number;
+			}
+
+			this.update(0);
+			this.skeletonRenderer ||= new spine.C3RendererEditor(iRenderer, this.matrix);
+			this.skeletonRenderer.draw(skeleton, _inst.GetOpacity());
+			const quad = _inst.GetQuad();
+			if (_inst.GetPropertyValue(PLUGIN_CLASS.PROP_DEBUG_SKELETON) as boolean)
+				this.skeletonRenderer.drawDebug(skeleton, rectX, rectY, quad);
+			this.skeletonRenderer.renderGameObjectBounds(rectX, rectY, quad);
+
+		} else {
+			iRenderer.SetAlphaBlend();
+
+			const logo = (this._sdkType as SpineC3PluginType).getSpineLogo(iRenderer);
+			if (logo) {
+				iRenderer.SetColorRgba(1, 1, 1, errorsString ? 0.25 : 1);
+				iRenderer.SetTexture(logo);
+			} else {
+				iRenderer.SetColorFillMode();
+				iRenderer.SetColorRgba(0.25, 0, 0, 0.25);
+			}
+			const quad = _inst.GetQuad();
+			iRenderer.Quad(quad);
+
+			if (errorsString) {
+				const webglText = this.getErrorTextC3(iRenderer, this.layoutView);
+				webglText.SetSize(_inst.GetWidth(), _inst.GetHeight(), this.layoutView.GetZoomFactor());
+				webglText.SetText(errorsString);
+
+				const texture = webglText.GetTexture();
+				if (!texture) return;
+
+				iRenderer.SetColorRgba(1, 1, 1, 1);
+				iRenderer.SetTexture(texture);
+				iRenderer.Quad3(quad, webglText.GetTexRect());
+			}
+
 		}
 	}
 

@@ -54,7 +54,6 @@ export class C3TextureEditor extends Texture {
 		// cannot change wraps after texture creation
 	}
 
-
 	dispose () {
 		this.renderer?.DeleteTexture(this.texture);
 		this.renderer = undefined;

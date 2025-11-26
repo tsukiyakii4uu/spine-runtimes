@@ -48,14 +48,13 @@ abstract class C3SkeletonRenderer<
 
 	constructor (
 		protected renderer: Renderer,
-		private skeleton: Skeleton,
 		protected matrix: C3Matrix,
 	) {
 		super();
 	}
 
-	draw (opacity = 1) {
-		const { skeleton, matrix, inv255 } = this;
+	draw (skeleton: Skeleton, opacity = 1) {
+		const { matrix, inv255 } = this;
 
 		let command = this.render(skeleton);
 		while (command) {
@@ -99,8 +98,8 @@ abstract class C3SkeletonRenderer<
 		}
 	}
 
-	drawDebug (x: number, y: number, quad: C3Quad) {
-		const { skeleton, matrix } = this;
+	drawDebug (skeleton: Skeleton, x: number, y: number, quad: C3Quad) {
+		const { matrix } = this;
 
 		this.setColorFillMode();
 		this.setBlendMode();
@@ -342,10 +341,6 @@ abstract class C3SkeletonRenderer<
 }
 
 export class C3RendererRuntime extends C3SkeletonRenderer<IRenderer, C3TextureRuntime> {
-	constructor (renderer: IRenderer, skeleton: Skeleton, matrix: C3Matrix) {
-		super(renderer, skeleton, matrix);
-	}
-
 	protected setColor (r: number, g: number, b: number, a: number): void {
 		this.renderer.setColor([r, g, b, a]);
 	}
