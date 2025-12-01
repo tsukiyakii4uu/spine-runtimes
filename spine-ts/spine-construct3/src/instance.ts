@@ -206,7 +206,8 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 
 			this.update(0);
 			this.skeletonRenderer ||= new spine.C3RendererEditor(iRenderer, this.matrix);
-			this.skeletonRenderer.draw(skeleton, _inst.GetOpacity());
+			const color = _inst.GetColor();
+			this.skeletonRenderer.draw(skeleton, [color.getR(), color.getG(), color.getB()], color.getA() * _inst.GetOpacity());
 			const quad = _inst.GetQuad();
 			if (_inst.GetPropertyValue(PLUGIN_CLASS.PROP_DEBUG_SKELETON) as boolean)
 				this.skeletonRenderer.drawDebug(skeleton, rectX, rectY, quad);

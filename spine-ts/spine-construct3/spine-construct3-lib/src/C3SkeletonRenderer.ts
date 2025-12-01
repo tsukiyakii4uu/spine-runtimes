@@ -53,7 +53,7 @@ abstract class C3SkeletonRenderer<
 		super();
 	}
 
-	draw (skeleton: Skeleton, opacity = 1) {
+	draw (skeleton: Skeleton, inColors: [number, number, number], opacity = 1) {
 		const { matrix, inv255 } = this;
 
 		let command = this.render(skeleton);
@@ -81,9 +81,9 @@ abstract class C3SkeletonRenderer<
 				const colorDst = i * 4;
 				const alpha = (color >>> 24 & 0xFF) * inv255 * opacity;
 				const alphaInverse = inv255 * alpha;
-				c3colors[colorDst] = (color >>> 16 & 0xFF) * alphaInverse;
-				c3colors[colorDst + 1] = (color >>> 8 & 0xFF) * alphaInverse;
-				c3colors[colorDst + 2] = (color & 0xFF) * alphaInverse;
+				c3colors[colorDst] = inColors[0] * (color >>> 16 & 0xFF) * alphaInverse;
+				c3colors[colorDst + 1] = inColors[1] * (color >>> 8 & 0xFF) * alphaInverse;
+				c3colors[colorDst + 2] = inColors[2] * (color & 0xFF) * alphaInverse;
 				c3colors[colorDst + 3] = alpha;
 			}
 

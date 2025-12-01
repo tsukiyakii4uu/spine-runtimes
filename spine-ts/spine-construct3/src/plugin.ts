@@ -41,20 +41,26 @@ const PLUGIN_CLASS = class SpineC3Plugin extends SDK.IPluginBase {
 
 		SDK.Lang.PushContext(`plugins.${PLUGIN_ID.toLowerCase()}`);
 
-		// @ts-ignore
 		this._info.SetName(globalThis.lang(".name"));
-		// @ts-ignore
 		this._info.SetDescription(globalThis.lang(".description"));
 		this._info.SetCategory(PLUGIN_CATEGORY);
 		this._info.SetAuthor("Esoteric Software");
-		// @ts-ignore
 		this._info.SetHelpUrl(globalThis.lang(".help-url"));
 		this._info.SetPluginType("world");			// mark as world plugin, which can draw
+
 		this._info.SetIsResizable(true);			// allow to be resized
 		this._info.SetIsRotatable(true);			// allow to be rotated
 		this._info.SetHasImage(false);
 		this._info.SetSupportsEffects(true);		// allow effects
 		this._info.SetMustPreDraw(true);
+
+		this._info.AddCommonPositionACEs(); // Position: Set X/Y, Set position, etc.
+		this._info.AddCommonSizeACEs(); // Size: Set size, width, height
+		this._info.AddCommonAngleACEs(); // Angle: Set angle, rotate
+		this._info.AddCommonAppearanceACEs(); // Appearance: Set opacity, visible, color
+		this._info.AddCommonZOrderACEs(); // Z order: bring to front/back, move up/down
+		this._info.SetSupportsColor(true); // enable system colour/transparency
+
 		this._info.SetRuntimeModuleMainScript("c3runtime/main.js");
 		this._info.AddC3RuntimeScript("c3runtime/spine-construct3-lib.js");
 		this._info.AddFileDependency({
