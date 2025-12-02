@@ -53,13 +53,14 @@ const PLUGIN_CLASS = class SpineC3Plugin extends SDK.IPluginBase {
 		this._info.SetHasImage(false);
 		this._info.SetSupportsEffects(true);		// allow effects
 		this._info.SetMustPreDraw(true);
+		this._info.SetSupportsColor(true); // enable system colour/transparency
 
 		this._info.AddCommonPositionACEs(); // Position: Set X/Y, Set position, etc.
 		this._info.AddCommonSizeACEs(); // Size: Set size, width, height
 		this._info.AddCommonAngleACEs(); // Angle: Set angle, rotate
 		this._info.AddCommonAppearanceACEs(); // Appearance: Set opacity, visible, color
 		this._info.AddCommonZOrderACEs(); // Z order: bring to front/back, move up/down
-		this._info.SetSupportsColor(true); // enable system colour/transparency
+		this._info.AddCommonSceneGraphACEs(); // Enables hierarchies: parent/children relations
 
 		this._info.SetRuntimeModuleMainScript("c3runtime/main.js");
 		this._info.AddC3RuntimeScript("c3runtime/spine-construct3-lib.js");
