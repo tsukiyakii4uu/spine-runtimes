@@ -554,7 +554,7 @@ static spAnimation *_spSkeletonBinary_readAnimation(spSkeletonBinary *self, cons
 						spAlphaTimeline_setFrame(timeline, frame, time, a);
 						if (frame == frameLast) break;
 						time2 = readFloat(input);
-						a2 = readByte(input) / 255;
+						a2 = readByte(input) / 255.0;
 						switch (readSByte(input)) {
 							case CURVE_STEPPED:
 								spCurveTimeline_setStepped(SUPER(timeline), frame);
