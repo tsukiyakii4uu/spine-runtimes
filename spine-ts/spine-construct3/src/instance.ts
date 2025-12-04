@@ -117,6 +117,8 @@ class SpineC3PluginInstance extends SDK.IWorldInstanceBase {
 		if (id === PLUGIN_CLASS.PROP_LOADER_SCALE) {
 			this.skeleton = undefined;
 			this.skins = [];
+			this.spineBoundsInit = false;
+			this.resetBounds();
 			this.layoutView?.Refresh();
 			return;
 		}
