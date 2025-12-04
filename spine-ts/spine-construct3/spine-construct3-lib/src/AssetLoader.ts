@@ -32,15 +32,18 @@ import { C3TextureEditor, C3TextureRuntime } from "./C3Texture";
 
 
 interface CacheEntry<T> {
-	data: T;
+	data?: T;
+	promise: Promise<T>;
 	refCount: number;
 }
 
+type ResourceCache<T> = Map<string, CacheEntry<T>>;
+
 export class AssetLoader {
 
-	private static CacheSkeleton = new Map<string, CacheEntry<SkeletonData>>();
-	private static CacheAtlas = new Map<string, CacheEntry<TextureAtlas>>();
-	private static CacheTexture = new Map<string, CacheEntry<C3TextureRuntime>>();
+	private static CacheSkeleton: ResourceCache<SkeletonData> = new Map();
+	private static CacheAtlas: ResourceCache<TextureAtlas> = new Map();
+	private static CacheTexture: ResourceCache<C3TextureRuntime> = new Map();
 
 	public async loadSkeletonEditor (sid: number, textureAtlas: TextureAtlas, scale = 1, instance: SDK.IWorldInstance) {
 		const projectFile = instance.GetProject().GetProjectFileBySID(sid);
@@ -96,82 +99,74 @@ export class AssetLoader {
 	}
 
 	public async loadSkeletonRuntime (path: string, textureAtlas: TextureAtlas, scale = 1, instance: IRuntime) {
-		const cacheKey = `${path}|scale${scale}`;
+		const loadPromise = (async () => {
+			const fullPath = await instance.assets.getProjectFileUrl(path);
+			if (!fullPath) throw new Error(`Cannot find project file url for: ${path}`);
 
-		const fileInCache = this.getFromCache(AssetLoader.CacheSkeleton, cacheKey);
-		if (fileInCache) return fileInCache;
+			const atlasLoader = new AtlasAttachmentLoader(textureAtlas);
 
-		const fullPath = await instance.assets.getProjectFileUrl(path);
-		if (!fullPath) return null;
+			let skeletonData: SkeletonData;
+			const isBinary = path.endsWith(".skel");
+			if (isBinary) {
+				const content = await instance.assets.fetchArrayBuffer(fullPath);
+				if (!content) throw new Error(`Cannot fetch array buffer for: ${fullPath}`);
 
-		const atlasLoader = new AtlasAttachmentLoader(textureAtlas);
+				const skeletonLoader = new SkeletonBinary(atlasLoader);
+				skeletonLoader.scale = scale;
+				skeletonData = skeletonLoader.readSkeletonData(content);
+			} else {
+				const content = await instance.assets.fetchJson(fullPath);
+				if (!content) throw new Error(`Cannot fetch json for: ${fullPath}`);
 
-		let skeletonData: SkeletonData;
-		const isBinary = path.endsWith(".skel");
-		if (isBinary) {
-			const content = await instance.assets.fetchArrayBuffer(fullPath);
-			if (!content) return null;
-			const skeletonLoader = new SkeletonBinary(atlasLoader);
-			skeletonLoader.scale = scale;
-			skeletonData = skeletonLoader.readSkeletonData(content);
-		} else {
-			const content = await instance.assets.fetchJson(fullPath);
-			if (!content) return null;
-			const skeletonLoader = new SkeletonJson(atlasLoader);
-			skeletonLoader.scale = scale;
-			skeletonData = skeletonLoader.readSkeletonData(content);
-		}
+				const skeletonLoader = new SkeletonJson(atlasLoader);
+				skeletonLoader.scale = scale;
+				skeletonData = skeletonLoader.readSkeletonData(content);
+			}
+			return skeletonData;
+		});
 
-		AssetLoader.CacheSkeleton.set(cacheKey, { data: skeletonData, refCount: 1 });
-
-		return skeletonData;
+		return this.loadRuntimeResource(`${path}|scale${scale}`, AssetLoader.CacheSkeleton, loadPromise);
 	}
 
 	public async loadAtlasRuntime (path: string, instance: IRuntime, renderer: IRenderer) {
-		const cacheKey = path;
+		const loadPromise = (async () => {
+			const fullPath = await instance.assets.getProjectFileUrl(path);
+			if (!fullPath) throw new Error(`Cannot find project file url for: ${path}`);
 
-		const fileInCache = this.getFromCache(AssetLoader.CacheAtlas, cacheKey);
-		if (fileInCache) return fileInCache;
+			const content = await instance.assets.fetchText(fullPath);
+			if (!content) throw new Error(`Cannot fetch text for: ${fullPath}`);
 
-		const fullPath = await instance.assets.getProjectFileUrl(path);
-		if (!fullPath) return null;
+			const basePath = path.substring(0, path.lastIndexOf("/") + 1);
+			const textureAtlas = new TextureAtlas(content);
+			await Promise.all(textureAtlas.pages.map(async page => {
+				const texture = await this.loadSpineTextureRuntime(basePath, page, instance, renderer);
+				if (texture) page.setTexture(texture);
+				return texture;
+			}));
 
-		const content = await instance.assets.fetchText(fullPath);
-		if (!content) return null;
+			return textureAtlas;
+		});
 
-		const basePath = path.substring(0, path.lastIndexOf("/") + 1);
-		const textureAtlas = new TextureAtlas(content);
-		await Promise.all(textureAtlas.pages.map(async page => {
-			const texture = await this.loadSpineTextureRuntime(basePath, page, instance, renderer);
-			if (texture) page.setTexture(texture);
-			return texture;
-		}));
-
-		AssetLoader.CacheAtlas.set(cacheKey, { data: textureAtlas, refCount: 1 });
-
-		return textureAtlas;
+		return this.loadRuntimeResource(path, AssetLoader.CacheAtlas, loadPromise);
 	}
 
 	public async loadSpineTextureRuntime (basePath: string, page: TextureAtlasPage, instance: IRuntime, renderer: IRenderer) {
 		const cacheKey = basePath + page.name;
 
-		const fileInCache = this.getFromCache(AssetLoader.CacheTexture, cacheKey);
-		if (fileInCache) return fileInCache;
+		const loadPromise = (async () => {
+			const fullPath = await instance.assets.getProjectFileUrl(cacheKey);
+			if (!fullPath) throw new Error(`Cannot find project file url for: ${cacheKey}`);
 
-		const fullPath = await instance.assets.getProjectFileUrl(cacheKey);
-		if (!fullPath) return null;
+			const content = await instance.assets.fetchBlob(fullPath);
+			if (!content) throw new Error(`Cannot fetch blob for: ${fullPath}`);
 
-		const content = await instance.assets.fetchBlob(fullPath);
-		if (!content) return null;
+			const image = await AssetLoader.createImageBitmapFromBlob(content, page.pma);
+			if (!image) throw new Error(`Cannot create image bitmap for: ${fullPath}`);
 
-		const image = await AssetLoader.createImageBitmapFromBlob(content, page.pma);
-		if (!image) return null;
+			return new C3TextureRuntime(image, renderer, page);
+		});
 
-		const spineTexture = new C3TextureRuntime(image, renderer, page);
-
-		this.addToCache(AssetLoader.CacheTexture, cacheKey, spineTexture);
-
-		return spineTexture;
+		return this.loadRuntimeResource(cacheKey, AssetLoader.CacheTexture, loadPromise);
 	}
 
 	public releaseInstanceResources (skeletonPath: string, atlasPath: string, loaderScale: number) {
@@ -179,19 +174,19 @@ export class AssetLoader {
 
 		const atlasEntry = AssetLoader.CacheAtlas.get(atlasPath);
 		if (atlasEntry) {
-			this.releaseResource(AssetLoader.CacheAtlas, atlasPath, () => {
+			this.releaseResource(AssetLoader.CacheAtlas, atlasPath, async () => {
 				const basePath = atlasPath.substring(0, atlasPath.lastIndexOf("/") + 1);
-				for (const page of atlasEntry.data.pages) {
+				for (const page of (await atlasEntry.promise).pages) {
 					const textureKey = basePath + page.name;
 					this.releaseResource(AssetLoader.CacheTexture, textureKey, (texture) => {
-						texture.dispose();
+						texture?.dispose();
 					});
 				}
 			});
 		}
 	}
 
-	private releaseResource<T> (cache: Map<string, CacheEntry<T>>, key: string, disposer?: (data: T) => void) {
+	private releaseResource<T> (cache: ResourceCache<T>, key: string, disposer?: (data?: T) => void) {
 		const entry = cache.get(key);
 		if (!entry) return;
 
@@ -203,16 +198,26 @@ export class AssetLoader {
 		}
 	}
 
-	private addToCache<T> (cache: Map<string, CacheEntry<T>>, cacheKey: string, data: T) {
-		cache.set(cacheKey, { data, refCount: 1 });
+	private async loadRuntimeResource<T> (cacheKey: string, resourceCache: ResourceCache<T>, loader: () => Promise<T>): Promise<T> {
+		const entry = this.getFromCache(resourceCache, cacheKey);
+		if (entry) return entry.promise;
+		const result = loader();
+		this.addToCache(resourceCache, cacheKey, result);
+		return result;
 	}
 
-	private getFromCache<T> (cache: Map<string, CacheEntry<T>>, cacheKey: string) {
-		const fileInCache = cache.get(cacheKey);
-		if (!fileInCache) return undefined;
+	private async addToCache<T> (cache: ResourceCache<T>, cacheKey: string, promise: Promise<T>) {
+		const cachEntry: CacheEntry<T> = { promise, refCount: 1 };
+		cache.set(cacheKey, cachEntry);
+		cachEntry.data = await promise;
+	}
 
-		fileInCache.refCount++;
-		return fileInCache.data;
+	private getFromCache<T> (cache: ResourceCache<T>, cacheKey: string) {
+		const entry = cache.get(cacheKey);
+		if (!entry) return undefined;
+
+		entry.refCount++;
+		return entry;
 	}
 
 	static async createImageBitmapFromBlob (blob: Blob, pma: boolean): Promise<ImageBitmap | null> {
@@ -220,7 +225,7 @@ export class AssetLoader {
 			return createImageBitmap(blob, { premultiplyAlpha: pma ? "none" : "premultiply" });
 		} catch (e) {
 			console.error("Failed to create ImageBitmap from blob:", e);
-			return null;
+			throw e;
 		}
 	}
 
