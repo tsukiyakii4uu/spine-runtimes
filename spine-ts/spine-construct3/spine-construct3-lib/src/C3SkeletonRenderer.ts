@@ -56,7 +56,7 @@ abstract class C3SkeletonRenderer<
 	draw (skeleton: Skeleton, inColors: [number, number, number], opacity = 1) {
 		const { matrix, inv255 } = this;
 
-		let command = this.render(skeleton);
+		let command = this.render(skeleton, true, [...inColors, opacity]);
 		while (command) {
 			const { numVertices, positions, uvs, colors, indices, numIndices, blendMode } = command;
 
@@ -79,11 +79,11 @@ abstract class C3SkeletonRenderer<
 
 				const color = colors[i];
 				const colorDst = i * 4;
-				const alpha = (color >>> 24 & 0xFF) * inv255 * opacity;
-				const alphaInverse = inv255 * alpha;
-				c3colors[colorDst] = inColors[0] * (color >>> 16 & 0xFF) * alphaInverse;
-				c3colors[colorDst + 1] = inColors[1] * (color >>> 8 & 0xFF) * alphaInverse;
-				c3colors[colorDst + 2] = inColors[2] * (color & 0xFF) * alphaInverse;
+				const alpha = (color >>> 24) * inv255;
+				const inv255Alpha = alpha * inv255;
+				c3colors[colorDst] = (color >>> 16 & 0xFF) * inv255Alpha;
+				c3colors[colorDst + 1] = (color >>> 8 & 0xFF) * inv255Alpha;
+				c3colors[colorDst + 2] = (color & 0xFF) * inv255Alpha;
 				c3colors[colorDst + 3] = alpha;
 			}
 
