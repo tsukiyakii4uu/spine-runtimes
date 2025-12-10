@@ -1088,7 +1088,8 @@ namespace Spine.Unity {
 					canvasRenderer.SetMesh(null);
 
 				SkeletonSubmeshGraphic submeshGraphic = submeshGraphics[i];
-				if (useOriginalTextureAndMaterial && hasBlendModeMaterials) {
+				if (useOriginalTextureAndMaterial &&
+					(hasBlendModeMaterials || submeshInstructionItem.hasPMAAdditiveSlot)) {
 					bool allowCullTransparentMesh = true;
 					BlendMode materialBlendMode = blendModeMaterials.BlendModeForMaterial(usedMaterialItems[i]);
 					if ((materialBlendMode == BlendMode.Normal && submeshInstructionItem.hasPMAAdditiveSlot) ||
