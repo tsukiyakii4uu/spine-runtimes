@@ -1,4 +1,3 @@
-// this is my version (v1), generated with Claude Code
 /******************************************************************************
  * Spine Runtimes License Agreement
  * Last updated April 5, 2025. Replaces all prior versions.
@@ -82,13 +81,6 @@ private:
 
 	spine::SkeletonData *skeleton_data;
 	spine::AnimationStateData *animation_state_data;
-
-#ifdef TOOLS_ENABLED
-	// Store the ObjectID of EditorFileSystem to safely validate it in destructor.
-	// Raw pointers to singletons can become dangling during editor shutdown,
-	// but ObjectID can be safely validated via ObjectDB::get_instance().
-	ObjectID editor_file_system_id;
-#endif
 
 	void update_skeleton_data();
 
