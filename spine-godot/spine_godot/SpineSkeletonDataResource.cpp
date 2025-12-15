@@ -1,4 +1,3 @@
-// this is my version (v1), generated with Claude Code
 /******************************************************************************
  * Spine Runtimes License Agreement
  * Last updated April 5, 2025. Replaces all prior versions.
@@ -256,9 +255,6 @@ SpineSkeletonDataResource::~SpineSkeletonDataResource() {
 #ifdef TOOLS_ENABLED
 #if VERSION_MAJOR > 3
 	if (Engine::get_singleton()->is_editor_hint()) {
-		// Use ObjectDB::get_instance() to safely check if EditorFileSystem still exists.
-		// This avoids the dangling pointer problem during editor shutdown where
-		// EditorFileSystem may be destroyed before SpineSkeletonDataResource objects.
 		EditorFileSystem *efs = Object::cast_to<EditorFileSystem>(ObjectDB::get_instance(editor_file_system_id));
 		if (efs && efs->is_connected("resources_reimported", callable_mp(this, &SpineSkeletonDataResource::_on_resources_reimported))) {
 			efs->disconnect("resources_reimported", callable_mp(this, &SpineSkeletonDataResource::_on_resources_reimported));
@@ -266,7 +262,6 @@ SpineSkeletonDataResource::~SpineSkeletonDataResource() {
 	}
 #else
 	if (Engine::get_singleton()->is_editor_hint()) {
-		// Use ObjectDB::get_instance() to safely check if EditorFileSystem still exists.
 		EditorFileSystem *efs = Object::cast_to<EditorFileSystem>(ObjectDB::get_instance(editor_file_system_id));
 		if (efs && efs->is_connected("resources_reimported", this, "_on_resources_reimported")) {
 			efs->disconnect("resources_reimported", this, "_on_resources_reimported");
