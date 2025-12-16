@@ -233,7 +233,6 @@ SpineSkeletonDataResource::SpineSkeletonDataResource()
 	if (Engine::get_singleton()->is_editor_hint()) {
 		EditorFileSystem *efs = get_editor_file_system();
 		if (efs) {
-			// Store the ObjectID for safe validation in destructor
 			editor_file_system_id = efs->get_instance_id();
 			efs->connect("resources_reimported", callable_mp(this, &SpineSkeletonDataResource::_on_resources_reimported));
 		}
@@ -242,7 +241,6 @@ SpineSkeletonDataResource::SpineSkeletonDataResource()
 	if (Engine::get_singleton()->is_editor_hint()) {
 		EditorFileSystem *efs = EditorFileSystem::get_singleton();
 		if (efs) {
-			// Store the ObjectID for safe validation in destructor
 			editor_file_system_id = efs->get_instance_id();
 			efs->connect("resources_reimported", this, "_on_resources_reimported");
 		}
