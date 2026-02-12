@@ -589,7 +589,7 @@ export class Spine extends Container {
 			matrix.ty = bone.worldY;
 			slotObject.transform.setFromMatrix(matrix);
 
-			slotObject.zIndex = zIndex + 1;
+			slotObject.zIndex = zIndex;
 			slotObject.alpha = this.skeleton.color.a * slot.color.a;
 		}
 	}
