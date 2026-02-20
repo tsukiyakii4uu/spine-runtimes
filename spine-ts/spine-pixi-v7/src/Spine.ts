@@ -338,7 +338,9 @@ export class Spine extends Container {
 			this.interactiveChildren = true;
 			this.hitArea = null;
 		}
-		this.calculateBounds();
+		if (!this.hasNeverUpdated) {
+			this.calculateBounds();
+		}
 	}
 	private _boundsPoint = new Point();
 	private _boundsSpineID = -1;
