@@ -318,6 +318,10 @@ namespace Spine.Unity.AttachmentTools {
 
 			if (sourceAttachments == null) throw new System.ArgumentNullException("sourceAttachments");
 			if (outputAttachments == null) throw new System.ArgumentNullException("outputAttachments");
+			if (additionalOutputTextures != null && additionalTexturePropertyIDsToCopy != null &&
+				additionalOutputTextures.Length < additionalTexturePropertyIDsToCopy.Length)
+				throw new System.ArgumentException("If non-null, additionalOutputTextures.Length must match " +
+					"additionalTexturePropertyIDsToCopy.Length.", "additionalOutputTextures");
 			outputTexture = null;
 			if (additionalTexturePropertyIDsToCopy != null && additionalTextureIsLinear == null) {
 				additionalTextureIsLinear = new bool[additionalTexturePropertyIDsToCopy.Length];
@@ -332,7 +336,6 @@ namespace Spine.Unity.AttachmentTools {
 
 			// Collect all textures from original attachments.
 			int numTextureParamsToRepack = 1 + (additionalTexturePropertyIDsToCopy == null ? 0 : additionalTexturePropertyIDsToCopy.Length);
-			additionalOutputTextures = (additionalTexturePropertyIDsToCopy == null ? null : new Texture2D[additionalTexturePropertyIDsToCopy.Length]);
 			if (texturesToPackAtParam.Length < numTextureParamsToRepack)
 				Array.Resize(ref texturesToPackAtParam, numTextureParamsToRepack);
 			for (int i = 0; i < numTextureParamsToRepack; ++i) {
@@ -426,7 +429,8 @@ namespace Spine.Unity.AttachmentTools {
 					outputTexture = newTexture;
 				} else {
 					newMaterial.SetTexture(additionalTexturePropertyIDsToCopy[i - 1], newTexture);
-					additionalOutputTextures[i - 1] = newTexture;
+					if (additionalOutputTextures != null)
+						additionalOutputTextures[i - 1] = newTexture;
 				}
 			}
 
