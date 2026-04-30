@@ -178,6 +178,7 @@
   - Added option for unsafe direct data loading when loading skeleton binary data to avoid some allocations, enabled via build define `SPINE_ALLOW_UNSAFE`. This define can be set via Spine Preferences, setting `Unsafe Build Defines - Direct data access`. The define is disabled by default to maintain existing behaviour. Changed asmdef setting for spine-unity assembly to allow unsafe code, has no effect other than allowing setting the `SPINE_ALLOW_UNSAFE` define.
   - Added option to `BoneFollower` components to follow attachment Z spacing offset. The Inspector component property can be found under `Follow Z Position` - `Attachment Z Spacing`. Defaults to `false` to maintain existing behaviour.
   - `SkeletonGraphic` now allows using separate additive Materials despite having `PMA Vertex Colors` enabled (as required for Spine shaders) via the new `Blend Modes` - `Force Additive Material` property in the `Advanced` Inspector section.
+  - Exposed `SpineVisualElement.Initialize` as `public`.
 
 - **Breaking changes**
 
