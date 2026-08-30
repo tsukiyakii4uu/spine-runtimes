@@ -847,6 +847,7 @@ export class Spine extends ViewContainer {
 
 	private initCachedData (slot: Slot, attachment: RegionAttachment | MeshAttachment): AttachmentCacheData {
 		let vertices: Float32Array;
+		const texture = attachment.region?.texture.texture;
 
 		if (attachment instanceof RegionAttachment) {
 			vertices = new Float32Array(8);
@@ -860,8 +861,8 @@ export class Spine extends ViewContainer {
 				color: new Color(1, 1, 1, 1),
 				darkColor: new Color(0, 0, 0, 0),
 				darkTint: this.darkTint,
-				skipRender: false,
-				texture: attachment.region?.texture.texture,
+				skipRender: !texture,
+				texture: texture ?? Texture.EMPTY,
 			};
 		}
 		else {
@@ -876,8 +877,8 @@ export class Spine extends ViewContainer {
 				color: new Color(1, 1, 1, 1),
 				darkColor: new Color(0, 0, 0, 0),
 				darkTint: this.darkTint,
-				skipRender: false,
-				texture: attachment.region?.texture.texture,
+				skipRender: !texture,
+				texture: texture ?? Texture.EMPTY,
 			};
 		}
 
