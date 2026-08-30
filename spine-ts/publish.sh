@@ -27,4 +27,4 @@ sed -i '' "s/$currentVersion/$newVersion/" spine-webcomponents/package.json
 rm package-lock.json
 rm -rf node_modules/@esotericsoftware
 npm install --workspaces
-npm publish --access public --workspaces
+npm publish --access public --workspaces --tag "v${major}.${minor}-latest"
